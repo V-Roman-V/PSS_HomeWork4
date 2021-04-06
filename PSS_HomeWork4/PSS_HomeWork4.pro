@@ -13,6 +13,8 @@ SOURCES += \
         Enumerations/cartype.cpp \
         Enumerations/dayofweek.cpp \
         Enumerations/month.cpp \
+        Enumerations/rating.cpp \
+        People_classes/passenger.cpp \
         People_classes/people.cpp \
         main.cpp
 
@@ -25,4 +27,6 @@ HEADERS += \
     Enumerations/cartype.h \
     Enumerations/dayofweek.h \
     Enumerations/month.h \
+    Enumerations/rating.h \
+    People_classes/passenger.h \
     People_classes/people.h
