@@ -6,7 +6,8 @@
 class Status
 {
     enum class StatusName{
-
+        Busy,
+        Free
     } status;
 
     static std::string enumToStr(StatusName name);

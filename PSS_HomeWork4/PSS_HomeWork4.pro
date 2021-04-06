@@ -10,6 +10,7 @@ SOURCES += \
         Additional_classes/order.cpp \
         Additional_classes/passport.cpp \
         Additional_classes/peoplegenerator.cpp \
+        Car_classes/car.cpp \
         Enumerations/cartype.cpp \
         Enumerations/dayofweek.cpp \
         Enumerations/month.cpp \
@@ -26,6 +27,7 @@ HEADERS += \
     Additional_classes/order.h \
     Additional_classes/passport.h \
     Additional_classes/peoplegenerator.h \
+    Car_classes/car.h \
     Enumerations/cartype.h \
     Enumerations/dayofweek.h \
     Enumerations/month.h \
