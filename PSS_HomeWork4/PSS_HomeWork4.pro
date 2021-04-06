@@ -14,6 +14,8 @@ SOURCES += \
         Enumerations/dayofweek.cpp \
         Enumerations/month.cpp \
         Enumerations/rating.cpp \
+        Enumerations/status.cpp \
+        People_classes/driver.cpp \
         People_classes/passenger.cpp \
         People_classes/people.cpp \
         main.cpp
@@ -28,5 +30,7 @@ HEADERS += \
     Enumerations/dayofweek.h \
     Enumerations/month.h \
     Enumerations/rating.h \
+    Enumerations/status.h \
+    People_classes/driver.h \
     People_classes/passenger.h \
     People_classes/people.h
