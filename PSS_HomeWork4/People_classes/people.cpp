@@ -1,7 +1,7 @@
 #include "people.h"
 #include <sstream>
 
-People::People(const std::string &_name, const std::string& _surname, const People::Gender &_gender, const Date &_date_of_birth, const Passport &_passport, const std::string &_phone_number, const std::string &_nationality)
+People::People(const std::string &_name, const std::string& _surname, const Gender &_gender, const Date &_date_of_birth, const Passport &_passport, const std::string &_phone_number, const std::string &_nationality)
     :name(_name),surname(_surname), date_of_birth(_date_of_birth), passport(_passport), gender(_gender), nationality(_nationality), phone_number(_phone_number)
 {}
 
@@ -18,12 +18,7 @@ std::string People::getFullInfo()const
     std::stringstream info;
     info <<"\tname: "<<name<<" "<<surname<<std::endl;
 
-    info <<"\tgender: ";
-    switch (gender) {
-        case Gender::unknown:info<<"unknown";break;
-        case Gender::male:info<<"male";break;
-        case Gender::female:info<<"female";break;
-    }
+    info <<"\tgender: "<<gender;
     info <<std::endl;
     info <<"\tage: "<<((date_of_birth.isCorrect())?std::to_string(getAge()):"-")<<std::endl;
     if(passport.isCorrect())

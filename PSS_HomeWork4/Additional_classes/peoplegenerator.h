@@ -18,7 +18,7 @@ private:
 
     static unsigned int count;
 
-    struct data{std::string name,surname; People::Gender gender;};
+    struct data{std::string name,surname; Gender gender;};
     static std::vector<data> names;
 
     static int getDigit(int i);

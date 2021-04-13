@@ -4,16 +4,16 @@ PeopleGenerator::Initializer PeopleGenerator::init;
 unsigned int PeopleGenerator::count = std::rand();
 
 std::vector<PeopleGenerator::data> PeopleGenerator::names =
-    {{"James", "Powers", People::Gender::male},      {"Leroy", "Clark", People::Gender::male},      {"Robert", "Shaw", People::Gender::male},      {"Harry", "Marshall", People::Gender::male},     {"David", "Bradley", People::Gender::male},
-    {"Valerie", "Matthews", People::Gender::female}, {"Rebecca", "Rogers", People::Gender::female}, {"Steven", "McDonald", People::Gender::male},  {"Bobbie", "Thompson", People::Gender::male},    {"Steven", "Becker", People::Gender::male},
-    {"Alice", "Wright", People::Gender::female},     {"Marie", "Gardner", People::Gender::female},  {"Robert", "Morrison", People::Gender::male},  {"William", "Griffin", People::Gender::male},    {"Martin", "Spencer", People::Gender::male},
-    {"Michelle", "Lewis", People::Gender::male},     {"Kyle", "Phillips", People::Gender::male},    {"Rick", "Martin", People::Gender::male},      {"Joshua", "Ward", People::Gender::female},      {"Thomas", "Peters", People::Gender::male},
-    {"Dorothy", "Martin", People::Gender::female},   {"Sandra", "Jackson", People::Gender::female}, {"Elsie", "Martin", People::Gender::female},   {"Mark", "Walker", People::Gender::male},        {"Christina", "Phelps", People::Gender::female},
-    {"Nathan", "Matthews", People::Gender::male},    {"Mary", "Simon", People::Gender::female},     {"Roger", "Gomez", People::Gender::male},      {"Sean", "Scott", People::Gender::female},       {"Fred", "Carpenter", People::Gender::male},
-    {"Ellen", "Williams", People::Gender::male},     {"Joseph", "Anderson", People::Gender::male},  {"Ernest", "Parsons", People::Gender::male},   {"Nancy", "Craig", People::Gender::female},      {"Maxine", "Harris", People::Gender::female},
-    {"Kim", "Hicks", People::Gender::male},          {"Jason", "Hall", People::Gender::male},       {"Jeffrey", "Harper", People::Gender::male},   {"Deborah", "Campbell", People::Gender::female}, {"Barbara", "Campbell", People::Gender::female},
-    {"Julie", "Ellis", People::Gender::female},      {"Bonnie", "Campbell", People::Gender::male},  {"Barbara", "Potter", People::Gender::female}, {"Lori", "Doyle", People::Gender::female},       {"Lillian", "Cobb", People::Gender::female},
-    {"Jim", "Curry", People::Gender::male},          {"Hector", "Wright", People::Gender::male},    {"Anthony", "Keller", People::Gender::male},   {"Harry", "Carson", People::Gender::male},       {"Ron", "Carter", People::Gender::male}};
+    {{"James", "Powers", Gender(2)},      {"Leroy", "Clark", Gender(2)},      {"Robert", "Shaw", Gender(2)},      {"Harry", "Marshall", Gender(2)},     {"David", "Bradley", Gender(2)},
+    {"Valerie", "Matthews", Gender(1)}, {"Rebecca", "Rogers", Gender(1)}, {"Steven", "McDonald", Gender(2)},  {"Bobbie", "Thompson", Gender(2)},    {"Steven", "Becker", Gender(2)},
+    {"Alice", "Wright", Gender(1)},     {"Marie", "Gardner", Gender(1)},  {"Robert", "Morrison", Gender(2)},  {"William", "Griffin", Gender(2)},    {"Martin", "Spencer", Gender(2)},
+    {"Michelle", "Lewis", Gender(2)},     {"Kyle", "Phillips", Gender(2)},    {"Rick", "Martin", Gender(2)},      {"Joshua", "Ward", Gender(1)},      {"Thomas", "Peters", Gender(2)},
+    {"Dorothy", "Martin", Gender(1)},   {"Sandra", "Jackson", Gender(1)}, {"Elsie", "Martin", Gender(1)},   {"Mark", "Walker", Gender(2)},        {"Christina", "Phelps", Gender(1)},
+    {"Nathan", "Matthews", Gender(2)},    {"Mary", "Simon", Gender(1)},     {"Roger", "Gomez", Gender(2)},      {"Sean", "Scott", Gender(1)},       {"Fred", "Carpenter", Gender(2)},
+    {"Ellen", "Williams", Gender(2)},     {"Joseph", "Anderson", Gender(2)},  {"Ernest", "Parsons", Gender(2)},   {"Nancy", "Craig", Gender(1)},      {"Maxine", "Harris", Gender(1)},
+    {"Kim", "Hicks", Gender(2)},          {"Jason", "Hall", Gender(2)},       {"Jeffrey", "Harper", Gender(2)},   {"Deborah", "Campbell", Gender(1)}, {"Barbara", "Campbell", Gender(1)},
+    {"Julie", "Ellis", Gender(1)},      {"Bonnie", "Campbell", Gender(2)},  {"Barbara", "Potter", Gender(1)}, {"Lori", "Doyle", Gender(1)},       {"Lillian", "Cobb", Gender(1)},
+    {"Jim", "Curry", Gender(2)},          {"Hector", "Wright", Gender(2)},    {"Anthony", "Keller", Gender(2)},   {"Harry", "Carson", Gender(2)},       {"Ron", "Carter", Gender(2)}};
 
 int PeopleGenerator::getDigit(int i)
 {

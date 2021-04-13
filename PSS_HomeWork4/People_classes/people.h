@@ -3,17 +3,15 @@
 #include <string>
 #include "Additional_classes/date.h"
 #include "Additional_classes/passport.h"
-#include <ctime>
+#include "Enumerations/gender.h"
 
 class People
 {
 public:
-    enum class Gender{unknown, male, female};
     People() = default;
-
     People(const std::string& _name,
            const std::string& _surname,
-           const Gender& _gender = Gender::unknown,
+           const Gender& _gender = Gender(),
            const Date& _date_of_birth = Date(),
            const Passport& _passport = Passport(),
            const std::string& _phone_number = "",
