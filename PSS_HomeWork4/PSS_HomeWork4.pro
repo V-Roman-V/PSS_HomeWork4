@@ -2,7 +2,14 @@ TEMPLATE = app
 CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG += qt
+
 QT += core
+
+# QXlsx code for Application Qt project
+QXLSX_PARENTPATH=./QXlsx/   # current QXlsx path is . (. means curret directory)
+QXLSX_HEADERPATH=./QXlsx/header/  # current QXlsx header path is ./header/
+QXLSX_SOURCEPATH=./QXlsx/source/  # current QXlsx source path is ./source/
+include(./QXlsx.pri)
 
 SOURCES += \
         Additional_classes/address.cpp \
@@ -43,3 +50,6 @@ HEADERS += \
     People_classes/driver.h \
     People_classes/passenger.h \
     People_classes/people.h
+
+RESOURCES += \
+    Resources/resources.qrc
