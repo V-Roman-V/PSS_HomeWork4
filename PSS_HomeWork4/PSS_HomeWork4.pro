@@ -11,7 +11,6 @@ SOURCES += \
         Additional_classes/passport.cpp \
         Additional_classes/peoplegenerator.cpp \
         Car_classes/car.cpp \
-        DataBaseInterface/databaseinterface.cpp \
         Enumerations/cartype.cpp \
         Enumerations/dayofweek.cpp \
         Enumerations/gender.cpp \
@@ -19,6 +18,7 @@ SOURCES += \
         Enumerations/rating.cpp \
         Enumerations/status.cpp \
         Interfaces/commoninterface.cpp \
+        Interfaces/databaseinterface.cpp \
         People_classes/driver.cpp \
         People_classes/passenger.cpp \
         People_classes/people.cpp \
@@ -39,6 +39,7 @@ HEADERS += \
     Enumerations/rating.h \
     Enumerations/status.h \
     Interfaces/commoninterface.h \
+    Interfaces/databaseinterface.h \
     People_classes/driver.h \
     People_classes/passenger.h \
     People_classes/people.h
