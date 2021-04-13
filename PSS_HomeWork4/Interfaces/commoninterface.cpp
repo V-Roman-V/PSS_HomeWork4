@@ -3,6 +3,12 @@ using namespace std;
 
 CommonInterface::CommonInterface():person(nullptr){}
 
+void CommonInterface::start()
+{
+    if(!Hello())return;
+    if(!Login())return;
+}
+
 bool CommonInterface::Hello()
 {
     while(true){
@@ -25,7 +31,7 @@ bool CommonInterface::Hello()
 bool CommonInterface::Login()
 {
     while(true){
-//        clear();
+        clear();
         string input;
 
         print("Hello "+static_cast<string>(type)+", to log in please enter your phone number or \"-\" to exit}");

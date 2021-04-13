@@ -7,7 +7,6 @@ using namespace std;
 int main()
 {
     CommonInterface cI;
-    cI.Hello();
-    cI.Login();
+    cI.start();
     return 0;
 }

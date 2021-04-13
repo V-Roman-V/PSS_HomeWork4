@@ -1,5 +1,5 @@
 #include "databaseinterface.h"
-#include <iostream>
+//#include <iostream>
 
 int DataBaseInterface::findPerson(const std::string& phone)
 {
@@ -8,7 +8,7 @@ int DataBaseInterface::findPerson(const std::string& phone)
         cell = doc.cellAt(row, COLUMNS::PHONE);
         if(cell == NULL)break;
         std::string var = cell->readValue().toString().toStdString();
-        std::cout<<var<<std::endl;
+//        std::cout<<var<<std::endl;
         if(var == phone)
             return row;
     }
