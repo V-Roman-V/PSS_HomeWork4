@@ -9,7 +9,7 @@
 class Passenger : public People
 {
 public:
-    Passenger();
+    Passenger(const People& p, Rating rating);
 
     //WTF
     void askAboutCoordinates();//???

@@ -8,3 +8,5 @@ Makefile*
 moc_*
 log_*
 log*.txt
+~*
+*.user

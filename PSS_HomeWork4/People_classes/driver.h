@@ -8,11 +8,10 @@
 #include "Enumerations/status.h"
 #include "Additional_classes/order.h"
 
-
 class Driver : public People
 {
 public:
-    Driver();
+    Driver(const People& p, Rating rating);
 
     std::vector<Order> getOrderHistory() const;
 

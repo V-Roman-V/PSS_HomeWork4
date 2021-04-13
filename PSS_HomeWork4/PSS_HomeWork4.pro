@@ -22,6 +22,7 @@ SOURCES += \
         Enumerations/dayofweek.cpp \
         Enumerations/gender.cpp \
         Enumerations/month.cpp \
+        Enumerations/persontype.cpp \
         Enumerations/rating.cpp \
         Enumerations/status.cpp \
         Interfaces/commoninterface.cpp \
@@ -43,6 +44,7 @@ HEADERS += \
     Enumerations/dayofweek.h \
     Enumerations/gender.h \
     Enumerations/month.h \
+    Enumerations/persontype.h \
     Enumerations/rating.h \
     Enumerations/status.h \
     Interfaces/commoninterface.h \
