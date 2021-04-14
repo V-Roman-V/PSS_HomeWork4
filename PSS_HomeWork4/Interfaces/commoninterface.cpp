@@ -62,7 +62,7 @@ bool CommonInterface::Login()
 
 bool CommonInterface::Menu()
 {
-    static const vector<string> Roles = {"SeeHistory","exit"};//...
+    static const vector<string> Roles = {"See_history","Change_payment_method","exit"};//...
     while(true){
         assert(person != nullptr);
         clear();
