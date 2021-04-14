@@ -1,11 +1,33 @@
 #include "databaseinterface.h"
-//#include <iostream>
 
-int DataBaseInterface::findPerson(const std::string& phone)
+void DataBaseInterface::fillDatabase()
+{
+    accounts.selectSheet("Passenger");
+    QXlsx::Cell* cell;
+    for(int row = 2;;row++){
+        accounts.selectSheet("Passenger");
+        cell = accounts.cellAt(row, ACCOUNTS_COLUMNS::PHONE);
+        if(cell == NULL)break;
+        if(!accounts.selectSheet(cell->readValue().toString())){
+            accounts.addSheet(cell->readValue().toString());
+            accounts.selectSheet(cell->readValue().toString());
+        }
+        QXlsx::Format format;
+        format.setHorizontalAlignment(QXlsx::Format::AlignHFill);
+        format.setPatternBackgroundColor(QColor(Qt::GlobalColor::yellow));
+        format.setShrinkToFit(true);
+        accounts.write(1,1,"Orders",format);
+        accounts.write(1,2,"Pinned addresses",format);
+        accounts.write(1,3,"Address description",format);
+    }
+    accounts.save();
+}
+
+int DataBaseInterface::findPerson(const std::string& phone) const
 {
     QXlsx::Cell* cell;
     for(int row = 2;;row++){
-        cell = doc.cellAt(row, COLUMNS::PHONE);
+        cell = accounts.cellAt(row, ACCOUNTS_COLUMNS::PHONE);
         if(cell == NULL)break;
         std::string var = cell->readValue().toString().toStdString();
 //        std::cout<<var<<std::endl;
@@ -15,58 +37,61 @@ int DataBaseInterface::findPerson(const std::string& phone)
     return -1;
 }
 
-People DataBaseInterface::getPerson(int row)
+People DataBaseInterface::getPerson(int row) const
 {
-    auto date = doc.cellAt(row,COLUMNS::DATEOFBIRTH)->readValue().toString().split("-");
+//    if (doc.cellAt(row, COLUMNS::NAME)== NULL)return People();
+    auto date = accounts.cellAt(row,ACCOUNTS_COLUMNS::DATEOFBIRTH)->readValue().toString().split("-");
     int y = date[0].toInt();
     int m = date[1].toInt();
     int d = date[2].toInt();
 
     int s,n;
-    s = doc.cellAt(row, COLUMNS::PASSSERIES)->readValue().toInt();
-    n = doc.cellAt(row, COLUMNS::PASSNUMBER)->readValue().toInt();
-    return People(doc.cellAt(row, COLUMNS::NAME)->readValue().toString().toStdString(),
-                  doc.cellAt(row, COLUMNS::SURNAME)->readValue().toString().toStdString(),
-                  Gender::fromString(doc.cellAt(row, COLUMNS::GENDER)->readValue().toString().toStdString()),
+    s = accounts.cellAt(row, ACCOUNTS_COLUMNS::PASSSERIES)->readValue().toInt();
+    n = accounts.cellAt(row, ACCOUNTS_COLUMNS::PASSNUMBER)->readValue().toInt();
+    return People(accounts.cellAt(row, ACCOUNTS_COLUMNS::NAME)->readValue().toString().toStdString(),
+                  accounts.cellAt(row, ACCOUNTS_COLUMNS::SURNAME)->readValue().toString().toStdString(),
+                  Gender::fromString(accounts.cellAt(row, ACCOUNTS_COLUMNS::GENDER)->readValue().toString().toStdString()),
                   Date(d,m,y),
                   Passport(s,n),
-                  doc.cellAt(row, COLUMNS::PHONE)->readValue().toString().toStdString()
+                  accounts.cellAt(row, ACCOUNTS_COLUMNS::PHONE)->readValue().toString().toStdString()
                  );
 }
 
 int DataBaseInterface::findDriver(const std::string& phone)
 {
-    doc.selectSheet("Driver");
+    accounts.selectSheet("Driver");
     return findPerson(phone);
 }
 
 Driver DataBaseInterface::getDriver(int row)
 {
-    doc.selectSheet("Driver");
+    accounts.selectSheet("Driver");
     return Driver(getPerson(row),
-                  Rating(doc.cellAt(row, COLUMNS::RATING)->readValue().toInt())
+                  Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt())
                   );
 }
 
 int DataBaseInterface::findPassenger(const std::string& phone)
 {
-    doc.selectSheet("Passenger");
+    accounts.selectSheet("Passenger");
     return findPerson(phone);
 }
 
 Passenger DataBaseInterface::getPassenger(int row)
 {
-    doc.selectSheet("Passenger");
+    accounts.selectSheet("Passenger");
     return Passenger(getPerson(row),
-                     Rating(doc.cellAt(row, COLUMNS::RATING)->readValue().toInt())
+                     Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt())
                      );
 }
 
 DataBaseInterface::DataBaseInterface()
-    :doc(":/Accounts.xlsx")
+    :accounts(QCoreApplication::applicationDirPath()+"/DataBase/Accounts.xlsx")
 {
-    bool loadDataBase = doc.load(); // load excel file
+//    std::cout<<(QCoreApplication::applicationDirPath()+"/DataBase/Accounts.xlsx").toStdString()<<std::endl;
+    bool loadDataBase = accounts.load(); // load excel file
     assert(loadDataBase);
+    fillDatabase();
 }
 
 

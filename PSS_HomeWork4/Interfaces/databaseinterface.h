@@ -6,10 +6,11 @@
 #include "People_classes/people.h"
 #include "People_classes/passenger.h"
 #include "People_classes/driver.h"
+#include <QCoreApplication>
 
 class DataBaseInterface
 {
-    enum COLUMNS{
+    enum ACCOUNTS_COLUMNS{
         NAME = 1,
         SURNAME,
         GENDER,
@@ -20,10 +21,12 @@ class DataBaseInterface
         RATING
     };
 
-    QXlsx::Document doc;
+    QXlsx::Document accounts;
 
-    int findPerson(const std::string& phone);
-    People getPerson(int p);
+    void fillDatabase();
+
+    int findPerson(const std::string& phone)const;
+    People getPerson(int p) const;
 protected:
     DataBaseInterface();
 

@@ -53,5 +53,3 @@ HEADERS += \
     People_classes/passenger.h \
     People_classes/people.h
 
-RESOURCES += \
-    Resources/resources.qrc

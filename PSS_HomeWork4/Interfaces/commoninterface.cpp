@@ -9,9 +9,10 @@ CommonInterface::CommonInterface():person(nullptr){}
 
 bool CommonInterface::start()
 {
-    return Hello() &&
-           Login() &&
-           PrintInfo();
+    waitENTER();
+//    return Hello() &&
+//           Login() &&
+//           PrintInfo();
 }
 
 bool CommonInterface::Hello()
