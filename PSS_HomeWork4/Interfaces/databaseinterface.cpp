@@ -17,19 +17,17 @@ int DataBaseInterface::findPerson(const std::string& phone)
 
 People DataBaseInterface::getPerson(int row)
 {
-    int d,m,y;
-    auto date = doc.cellAt(row,COLUMNS::NAME)->readValue().toDate();
-    d = date.day();
-    m = date.month();
-    y = date.year();
+    auto date = doc.cellAt(row,COLUMNS::DATEOFBIRTH)->readValue().toString().split("-");
+    int y = date[0].toInt();
+    int m = date[1].toInt();
+    int d = date[2].toInt();
 
     int s,n;
     s = doc.cellAt(row, COLUMNS::PASSSERIES)->readValue().toInt();
     n = doc.cellAt(row, COLUMNS::PASSNUMBER)->readValue().toInt();
-
     return People(doc.cellAt(row, COLUMNS::NAME)->readValue().toString().toStdString(),
                   doc.cellAt(row, COLUMNS::SURNAME)->readValue().toString().toStdString(),
-                  Gender::fromString(doc.cellAt(row, COLUMNS::NAME)->readValue().toString().toStdString()),
+                  Gender::fromString(doc.cellAt(row, COLUMNS::GENDER)->readValue().toString().toStdString()),
                   Date(d,m,y),
                   Passport(s,n),
                   doc.cellAt(row, COLUMNS::PHONE)->readValue().toString().toStdString()
@@ -58,7 +56,7 @@ int DataBaseInterface::findPassenger(const std::string& phone)
 
 Passenger DataBaseInterface::getPassenger(int row)
 {
-    doc.selectSheet("Driver");
+    doc.selectSheet("Passenger");
     return Passenger(getPerson(row),
                      Rating(doc.cellAt(row, COLUMNS::RATING)->readValue().toInt())
                      );
@@ -67,22 +65,8 @@ Passenger DataBaseInterface::getPassenger(int row)
 DataBaseInterface::DataBaseInterface()
     :doc(":/Accounts.xlsx")
 {
-
-    if (!doc.load()) // load excel file
-        return;
-//    QXlsx::Cell* cell;
-//    for(int row = 1;;row++){
-//        cell = doc.cellAt(row, 1);
-//        if(cell == NULL)break;
-
-//        for(int col = 1;;col++){
-//            cell = doc.cellAt(row, col);
-//            if(cell == NULL)break;
-//            QVariant var = cell->readValue();
-//            std::cout<<var.toString().toStdString()<<" ";
-//        }
-//        std::cout<<std::endl;
-//    }
+    bool loadDataBase = doc.load(); // load excel file
+    assert(loadDataBase);
 }
 
 

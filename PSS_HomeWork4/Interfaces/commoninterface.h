@@ -14,11 +14,12 @@ class CommonInterface : public DataBaseInterface
 {
 public:
     CommonInterface();
-    virtual void start();
+    virtual bool start();
 
 protected:
     bool Hello();
     bool Login();
+    bool PrintInfo();
 
     static inline void print(const std::string& s){std::cout<<s<<std::endl;}
     static inline void getInput(std::string& input){std::cout<<'>';std::cin>>input;}

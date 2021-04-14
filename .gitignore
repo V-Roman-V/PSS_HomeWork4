@@ -10,3 +10,4 @@ log_*
 log*.txt
 ~*
 *.user
+*.pro.user

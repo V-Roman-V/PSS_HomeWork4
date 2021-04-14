@@ -93,7 +93,7 @@ int Date::toDays() const { // from 1900 years;
 
 bool Date::isCorrect() const
 {
-    return toDays()==1;
+    return toDays()!=1;
 }
 
 int Date::dateDiff(const Date &right) const{

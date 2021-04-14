@@ -17,6 +17,7 @@ private:
 public:
     Date(){operator=(Date::getNowDate());}
     Date(uint16_t d, uint16_t m, uint16_t y):Date(d,m,y,0){}
+    Date(const Date& d){operator=(d);}
 
     bool isCorrect() const;
 

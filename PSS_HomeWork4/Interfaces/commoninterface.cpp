@@ -3,10 +3,15 @@ using namespace std;
 
 CommonInterface::CommonInterface():person(nullptr){}
 
-void CommonInterface::start()
+//Passen: 89532136828
+//Driver: 89192484803
+
+
+bool CommonInterface::start()
 {
-    if(!Hello())return;
-    if(!Login())return;
+    return Hello() &&
+           Login() &&
+           PrintInfo();
 }
 
 bool CommonInterface::Hello()
@@ -50,8 +55,17 @@ bool CommonInterface::Login()
             person = new Driver(getDriver(num));
             return true;
         }
-        return true;
+        assert(!"Incorrect person type");
     }
+}
+
+bool CommonInterface::PrintInfo()
+{
+    assert(person != nullptr);
+    clear();
+    print("You are successfully logged in as:");
+    print(person->getFullInfo());
+    return true;
 }
 
 

@@ -20,7 +20,11 @@ std::string People::getFullInfo()const
 
     info <<"\tgender: "<<gender;
     info <<std::endl;
-    info <<"\tage: "<<((date_of_birth.isCorrect())?std::to_string(getAge()):"-")<<std::endl;
+    if(date_of_birth.isCorrect()){
+        info <<"\tbirth: "<<date_of_birth<<std::endl;
+        info <<"\tage: "<<getAge()<<std::endl;
+    } else
+        info <<"\birth: -"<<std::endl;
     if(passport.isCorrect())
         info <<"\tpassport: "<<passport<<std::endl;
     if(phone_number.size() > 5)
