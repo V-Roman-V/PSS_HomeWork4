@@ -24,6 +24,8 @@ public:
 
     std::string getName() const;
     unsigned short getAge() const;
+    std::string getPhone() const;
+
 private:
     std::string name;
     std::string surname;

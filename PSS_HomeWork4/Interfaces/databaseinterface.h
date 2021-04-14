@@ -2,11 +2,15 @@
 #define DATABASEINTERFACE_H
 
 #include <string>
+#include <algorithm>
+#include <QCoreApplication>
+
 #include "xlsxdocument.h"
 #include "People_classes/people.h"
+#include "People_classes/user.h"
 #include "People_classes/passenger.h"
 #include "People_classes/driver.h"
-#include <QCoreApplication>
+
 
 class DataBaseInterface
 {
@@ -19,6 +23,20 @@ class DataBaseInterface
         PASSNUMBER,
         PHONE,
         RATING
+    };
+    enum ORDERS_COLUMNS{
+        ORDERNUMBER = 1,
+        ADDRESSFROM,
+        ADDRESSTO,
+        CARTYPE,
+        PRICE,
+        TIME,
+        DATE
+    };
+    enum PERSON_COLUMNS{
+        ORDERS = 1,
+        PINNEDADDR,
+        ADDRNAME
     };
 
     QXlsx::Document accounts;

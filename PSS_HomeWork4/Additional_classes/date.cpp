@@ -91,6 +91,10 @@ int Date::toDays() const { // from 1900 years;
     return days;
 }
 
+Date::Date(const QDate &d)
+    :Date(d.day(),d.month(),d.year())
+{}
+
 bool Date::isCorrect() const
 {
     return toDays()!=1;

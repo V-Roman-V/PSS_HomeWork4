@@ -1,7 +1,7 @@
 #include "driver.h"
 
-Driver::Driver(const People &p, Rating rating)
-    :People(p), rating(rating)
+Driver::Driver(const User &u, Rating rating)
+    :User(u), rating(rating)
 {}
 
 std::vector<Order> Driver::getOrderHistory() const {

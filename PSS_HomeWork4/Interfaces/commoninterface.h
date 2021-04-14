@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "People_classes/people.h"
+#include "People_classes/user.h"
 #include "People_classes/driver.h"
 #include "People_classes/passenger.h"
 #include "Interfaces/databaseinterface.h"
@@ -19,7 +19,7 @@ public:
 protected:
     bool Hello();
     bool Login();
-    bool PrintInfo();
+    bool Menu();
 
     static inline void print(const std::string& s){std::cout<<s<<std::endl;}
     static inline void getInput(std::string& input){std::cout<<'>';std::cin>>input;}
@@ -28,7 +28,7 @@ protected:
     static inline void clear(){system("cls");}
 
     PersonType type;
-    People* person;
+    User* person;
 
     template<class T>
     static std::string getListOptions(const std::vector<T>& list);

@@ -1,17 +1,17 @@
 #ifndef DRIVER_H
 #define DRIVER_H
 
-#include "people.h"
+#include "user.h"
 #include <vector>
 #include "Enumerations/rating.h"
 #include "Enumerations/cartype.h"
 #include "Enumerations/status.h"
 #include "Additional_classes/order.h"
 
-class Driver : public People
+class Driver : public User
 {
 public:
-    Driver(const People& p, Rating rating);
+    Driver(const User& p, Rating rating);
 
     std::vector<Order> getOrderHistory() const;
 

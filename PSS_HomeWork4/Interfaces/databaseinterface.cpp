@@ -2,6 +2,7 @@
 
 void DataBaseInterface::fillDatabase()
 {
+    // used to generate people pages
     accounts.selectSheet("Passenger");
     QXlsx::Cell* cell;
     for(int row = 2;;row++){
@@ -39,19 +40,13 @@ int DataBaseInterface::findPerson(const std::string& phone) const
 
 People DataBaseInterface::getPerson(int row) const
 {
-//    if (doc.cellAt(row, COLUMNS::NAME)== NULL)return People();
-    auto date = accounts.cellAt(row,ACCOUNTS_COLUMNS::DATEOFBIRTH)->readValue().toString().split("-");
-    int y = date[0].toInt();
-    int m = date[1].toInt();
-    int d = date[2].toInt();
-
     int s,n;
     s = accounts.cellAt(row, ACCOUNTS_COLUMNS::PASSSERIES)->readValue().toInt();
     n = accounts.cellAt(row, ACCOUNTS_COLUMNS::PASSNUMBER)->readValue().toInt();
     return People(accounts.cellAt(row, ACCOUNTS_COLUMNS::NAME)->readValue().toString().toStdString(),
                   accounts.cellAt(row, ACCOUNTS_COLUMNS::SURNAME)->readValue().toString().toStdString(),
                   Gender::fromString(accounts.cellAt(row, ACCOUNTS_COLUMNS::GENDER)->readValue().toString().toStdString()),
-                  Date(d,m,y),
+                  Date(accounts.cellAt(row,ACCOUNTS_COLUMNS::DATEOFBIRTH)->readValue().toDate()),
                   Passport(s,n),
                   accounts.cellAt(row, ACCOUNTS_COLUMNS::PHONE)->readValue().toString().toStdString()
                  );
@@ -66,7 +61,8 @@ int DataBaseInterface::findDriver(const std::string& phone)
 Driver DataBaseInterface::getDriver(int row)
 {
     accounts.selectSheet("Driver");
-    return Driver(getPerson(row),
+    People person = getPerson(row);
+    return Driver(User(person,{}),
                   Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt())
                   );
 }
@@ -80,8 +76,46 @@ int DataBaseInterface::findPassenger(const std::string& phone)
 Passenger DataBaseInterface::getPassenger(int row)
 {
     accounts.selectSheet("Passenger");
-    return Passenger(getPerson(row),
-                     Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt())
+    People person = getPerson(row);
+    accounts.selectSheet(QString::fromStdString(person.getPhone()));
+    std::vector<int> ordersNum;
+    std::vector<Address> addresses;
+    for(int row = 2;;row++){
+        auto cell = accounts.cellAt(row, PERSON_COLUMNS::ORDERS);
+        if(cell == NULL)break;
+        ordersNum.push_back(cell->value().toInt());
+    }
+    for(int row = 2;;row++){
+        auto cell = accounts.cellAt(row, PERSON_COLUMNS::PINNEDADDR);
+        if(cell == NULL)break;
+        Address address = cell->value().toString().toStdString();
+        auto name = accounts.cellAt(row, PERSON_COLUMNS::ADDRNAME);
+        if(name != NULL)
+            address.setName( name->value().toString().toStdString());
+
+        addresses.push_back(address);
+    }
+
+    sort(ordersNum.begin(),ordersNum.end());
+    std::cout<<"yes";
+    std::vector<Order> orders;
+    accounts.selectSheet("Orders");
+    for(auto row:ordersNum){
+        Order order;
+        order.number = row+1;
+        order.from   = accounts.read(row+1,ORDERS_COLUMNS::ADDRESSFROM).toString().toStdString();
+        order.to     = accounts.read(row+1,ORDERS_COLUMNS::ADDRESSTO).toString().toStdString();
+        order.car    = CarType(accounts.read(row+1,ORDERS_COLUMNS::CARTYPE).toInt());
+        order.price  = accounts.read(row+1,ORDERS_COLUMNS::PRICE).toDouble();
+        order.time   = accounts.read(row+1,ORDERS_COLUMNS::TIME).toTime();
+        order.date   = accounts.read(row+1,ORDERS_COLUMNS::DATE).toDate();
+        orders.push_back(order);
+    }
+
+    accounts.selectSheet("Passenger");
+    return Passenger(User(person,orders),
+                     Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt()),
+                     addresses
                      );
 }
 
@@ -91,7 +125,7 @@ DataBaseInterface::DataBaseInterface()
 //    std::cout<<(QCoreApplication::applicationDirPath()+"/DataBase/Accounts.xlsx").toStdString()<<std::endl;
     bool loadDataBase = accounts.load(); // load excel file
     assert(loadDataBase);
-    fillDatabase();
+//    fillDatabase();
 }
 
 

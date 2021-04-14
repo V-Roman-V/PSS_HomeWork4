@@ -43,3 +43,8 @@ unsigned short People::getAge() const
 {
     return date_of_birth.getAgeDiff(Date::getNowDate());
 }
+
+std::string People::getPhone() const
+{
+    return phone_number;
+}

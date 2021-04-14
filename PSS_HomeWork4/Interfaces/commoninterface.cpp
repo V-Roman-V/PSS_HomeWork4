@@ -3,23 +3,22 @@ using namespace std;
 
 CommonInterface::CommonInterface():person(nullptr){}
 
-//Passen: 89532136828
-//Driver: 89192484803
+//Passenger: 89959280771
+//Driver   : 89192484803
 
 
 bool CommonInterface::start()
 {
-    waitENTER();
-//    return Hello() &&
-//           Login() &&
-//           PrintInfo();
+//    waitENTER();
+    return Hello() &&
+           Login() &&
+           Menu();
 }
 
 bool CommonInterface::Hello()
 {
+    static const vector<string> Roles = {PersonType(0),PersonType(1),"exit"};
     while(true){
-        static const vector<string> Roles = {PersonType(0),PersonType(1),"exit"};
-
         clear();
         string input;
 
@@ -31,6 +30,7 @@ bool CommonInterface::Hello()
         if(num== 2) return false;
         type = PersonType(num);
         return true;
+
     }
 }
 
@@ -60,13 +60,17 @@ bool CommonInterface::Login()
     }
 }
 
-bool CommonInterface::PrintInfo()
+bool CommonInterface::Menu()
 {
-    assert(person != nullptr);
-    clear();
-    print("You are successfully logged in as:");
-    print(person->getFullInfo());
-    return true;
+    static const vector<string> Roles = {"SeeHistory","exit"};//...
+    while(true){
+        assert(person != nullptr);
+        clear();
+        print("You are successfully logged in as:");
+        print(person->getFullInfo());
+    //    person->printOrderHistory();
+        return true;
+    }
 }
 
 
