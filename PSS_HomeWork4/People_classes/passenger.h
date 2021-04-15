@@ -25,6 +25,8 @@ public:
 
     void addPinAddress(const Address& addr);
 
+    std::vector<Address> getPinnedAddresses() const;
+
 private:
     Rating rating;
     // TODO способ оплаты

@@ -1,5 +1,15 @@
 #include "cartype.h"
 
+std::vector<std::string> CarType::getList()
+{
+    std::vector<std::string> list;
+    list.push_back(enumToStr(CarTypeNames::Economy));
+    list.push_back(enumToStr(CarTypeNames::Comfort));
+    list.push_back(enumToStr(CarTypeNames::ComfortPlus));
+    list.push_back(enumToStr(CarTypeNames::Business));
+    return list;
+}
+
 std::string CarType::enumToStr(CarType::CarTypeNames name){
     switch(name){
         case CarTypeNames::Economy:     return "Economy";

@@ -11,8 +11,9 @@ std::string Passenger::getFullInfo() const
     info<<"\tPayment method: "<<pay_method<<std::endl;
     if(pinned_addresses.size()>0){
         info<<"\tPinned addresses:"<<std::endl;
+        int i=0;
         for(const Address& addr:pinned_addresses)
-            info<<"\t\t"<<addr<<std::endl;
+            info<<"\t\t"<<i++<<") "<<addr<<std::endl;
     }
     return info.str();
 }
@@ -30,5 +31,10 @@ void Passenger::setPayMethod(const PayType &value)
 void Passenger::addPinAddress(const Address &addr)
 {
     pinned_addresses.push_back(addr);
+}
+
+std::vector<Address> Passenger::getPinnedAddresses() const
+{
+    return pinned_addresses;
 }
 

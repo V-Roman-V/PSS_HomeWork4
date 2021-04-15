@@ -8,11 +8,17 @@ class User : public People
 {
 protected:
     std::vector<Order> order_history;
+    Order current_order;
+    bool _hasActiveOrder=false;
 public:
     User(const People& p, const std::vector<Order>&);
 
     void printOrderHistory() const;
     std::vector<Order> getOrderHistory() const;
+    void setCurrentOrder(const Order&);
+    void deleteCurrentOrder();
+    void closeCurrentOrder();
+    bool hasActiveOrder() const;
 };
 
 #endif // USER_H

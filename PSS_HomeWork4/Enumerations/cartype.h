@@ -2,6 +2,7 @@
 #define CARTYPE_H
 
 #include <string>
+#include <vector>
 
 class CarType{
     static const uint8_t countCars = 4;
@@ -17,8 +18,12 @@ class CarType{
 
     static CarTypeNames intToEnum(int val);
 
+    CarType(CarTypeNames n): car(n){}
+
 public:
     explicit CarType(int d = 0): car( intToEnum(d) ){}
+
+    static std::vector<std::string> getList();
 
     operator CarTypeNames(){return car;}
 

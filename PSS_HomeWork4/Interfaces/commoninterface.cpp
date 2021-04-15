@@ -1,7 +1,9 @@
 #include "commoninterface.h"
+#include <ctime>
+
 using namespace std;
 
-CommonInterface::CommonInterface():person(nullptr){}
+CommonInterface::CommonInterface():person(nullptr){srand(time(0));}
 
 CommonInterface::~CommonInterface()
 {
@@ -77,28 +79,30 @@ bool CommonInterface::Menu()
 bool CommonInterface::PassMenu()
 {
     static const vector<string> Actions = {"See_history","Change_payment_method","Add_pinned_address","Make_order","exit"};//...
+    static const vector<string> Actions_order = {"See_history","Change_payment_method","Add_pinned_address","See_current_order","exit"};//...
+
     string input;
     while(true){
         clear();
         print("You are successfully logged in as:");
         print(person->getFullInfo());
-        print("Select the option: "+getListOptions(Actions));
+        const auto& Act = person->hasActiveOrder()?Actions_order:Actions;
+        print("Select the option: "+getListOptions(Act));
         getInput(input);
-        int num = calculateInput(input,Actions);
+        int num = calculateInput(input,Act);
         if(num ==-1) continue; // try Again
-        if(num == (Actions.size()-1)) return false;
+        if(num == (Act.size()-1)) return false;
         switch(num){
             case 0: See_History();break;
             case 1: ChangePay();break;
             case 2: AddPinAddr();break;
-            case 3: MakeOrder();break;
+            case 3: person->hasActiveOrder()?SeeOrder():MakeOrder();break;
         }
     }
 }
 
 void CommonInterface::See_History()
 {
-//    print(person->getName() + " order history:");
     person->printOrderHistory();
     waitENTER();
 }
@@ -107,8 +111,8 @@ void CommonInterface::ChangePay()
 {
     static const vector<string> Type = {PayType(0),PayType(1),"back"};
     string input;
+    Passenger* pass = static_cast<Passenger*>(person);
     while(true){
-        Passenger* pass = static_cast<Passenger*>(person);
         clear();
         print("You pay method is: "+static_cast<string>(pass->getPayMethod()));
         print("Select the new type: "+getListOptions(Type));
@@ -139,6 +143,77 @@ void CommonInterface::AddPinAddr()
 }
 
 void CommonInterface::MakeOrder()
+{
+    string input;
+    Order order;
+    try {
+        order.from  = ChooseAddr(true);
+        order.to    = ChooseAddr(false);
+        order.car   = ChooseCar();
+        order.time  = QTime(rand()%3,rand()%60);
+        order.price = order.time.hour()*60 + order.time.minute() + order.car.number()*100; // time + car*100
+        order.date  = Date::getNowDate();
+        CreatOrder(order);
+        person->setCurrentOrder(order);
+        // TODO: save new address to the excel
+    }  catch (int exit) {}
+}
+
+Address CommonInterface::ChooseAddr(bool from)
+{
+    string input;
+    Passenger* pass = static_cast<Passenger*>(person);
+    while(true){
+        int num = pass->getPinnedAddresses().size();
+        string choose_text = num==0?"No pinned addresses":num==1?"0":("0 - "+to_string(num-1));
+        string address_text = from?"current":"target";
+        print("Enter your " + address_text + " address or choose it ("+choose_text+") or \"(-)back\"");
+        cout<<'>';if(from)cin.get();
+        getline(cin,input);
+        if(input == "back" or input == "-") throw -1;
+        if(isNumber(input)){
+            int addr = stoi(input);
+            if (addr>num-1) continue;
+            return pass->getPinnedAddresses().at(addr);
+        }
+        return input;
+    }
+    throw -1;
+}
+
+CarType CommonInterface::ChooseCar()
+{
+    string input;
+    const vector<string> types = CarType::getList();
+    while(true){
+        print("Choose type of car " + getListOptions(types) + " or \"(-)back\"");
+        getInput(input);
+        int num = calculateInput(input,types);
+        if(num == -1) continue;
+        if(input == "back" or input == "-") throw -1;
+        return CarType(num);
+    }
+    throw -1;
+}
+
+void CommonInterface::CreatOrder(const Order& order)
+{
+    static const vector<string> consent = {"confirm", "cancel"};
+    string input;
+    while(true){
+        clear();
+        print("Your order is: ");
+        order.print();
+        print("Create order?"+getListOptions(consent));
+        getInput(input);
+        int answer = calculateInput(input,consent);
+        if(answer == -1)continue;
+        if(answer == 1) throw -1;
+        break;
+    }
+}
+
+void CommonInterface::SeeOrder()
 {
 
 }
