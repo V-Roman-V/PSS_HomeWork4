@@ -6,7 +6,7 @@
 class PayType
 {
     enum class PayName{
-        Cash = 1,  // 1
+        Cash = 0,  // 1
         Noncash
     } type;
     static std::string enumToStr(PayName name);
@@ -17,6 +17,7 @@ public:
     explicit PayType(int t = 0): type( intToEnum(t) ){}
 
     operator PayName(){return type;}
+    operator std::string() const {return enumToStr(type);}
 
     int number() const {return static_cast<int>(type);}
 

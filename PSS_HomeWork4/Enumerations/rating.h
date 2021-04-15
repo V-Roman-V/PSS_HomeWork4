@@ -18,7 +18,7 @@ class Rating
     static RatingName intToEnum(int val);
 
 public:
-    explicit Rating(int r = 0): rating( intToEnum(r) ){}
+    explicit Rating(int r = 1): rating( intToEnum(r) ){}
 
     operator RatingName(){return rating;}
 

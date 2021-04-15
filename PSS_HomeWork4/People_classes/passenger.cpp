@@ -22,3 +22,13 @@ PayType Passenger::getPayMethod() const
     return pay_method;
 }
 
+void Passenger::setPayMethod(const PayType &value)
+{
+    pay_method = value;
+}
+
+void Passenger::addPinAddress(const Address &addr)
+{
+    pinned_addresses.push_back(addr);
+}
+

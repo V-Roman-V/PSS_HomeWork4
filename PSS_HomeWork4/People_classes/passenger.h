@@ -21,6 +21,10 @@ public:
 
     PayType getPayMethod() const;
 
+    void setPayMethod(const PayType &value);
+
+    void addPinAddress(const Address& addr);
+
 private:
     Rating rating;
     // TODO способ оплаты
