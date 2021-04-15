@@ -153,7 +153,8 @@ void CommonInterface::MakeOrder()
         order.time  = QTime(rand()%3,rand()%60);
         order.price = order.time.hour()*60 + order.time.minute() + order.car.number()*100; // time + car*100
         order.date  = Date::getNowDate();
-        CreatOrder(order);
+        CreateOrder(order);
+        order.number = getNextOrderNumber();
         person->setCurrentOrder(order);
         // TODO: save new address to the excel
     }  catch (int exit) {}
@@ -196,7 +197,7 @@ CarType CommonInterface::ChooseCar()
     throw -1;
 }
 
-void CommonInterface::CreatOrder(const Order& order)
+void CommonInterface::CreateOrder(const Order& order)
 {
     static const vector<string> consent = {"confirm", "cancel"};
     string input;
@@ -215,7 +216,15 @@ void CommonInterface::CreatOrder(const Order& order)
 
 void CommonInterface::SeeOrder()
 {
-
+    string input;
+    clear();
+    print("Your current order is: ");
+    person->getCurrentOrder().print();
+    print("If you want cancel it, print \"yes\" or type ENTER to return");
+    cout<<'>';cin.get();
+    getline(cin,input);
+    if(input == "yes")
+            person->deleteCurrentOrder();
 }
 
 

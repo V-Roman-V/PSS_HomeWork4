@@ -5,6 +5,11 @@ bool User::hasActiveOrder() const
     return _hasActiveOrder;
 }
 
+Order User::getCurrentOrder() const
+{
+    return current_order;
+}
+
 User::User(const People &p, const std::vector<Order>& orders)
     :People(p), order_history(orders)
 {std::cout<<"oku";}

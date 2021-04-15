@@ -128,4 +128,10 @@ DataBaseInterface::DataBaseInterface()
 //    fillDatabase();
 }
 
+int DataBaseInterface::getNextOrderNumber()
+{
+    // TODO
+    return -1;
+}
+
 

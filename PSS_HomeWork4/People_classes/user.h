@@ -19,6 +19,7 @@ public:
     void deleteCurrentOrder();
     void closeCurrentOrder();
     bool hasActiveOrder() const;
+    Order getCurrentOrder() const;
 };
 
 #endif // USER_H

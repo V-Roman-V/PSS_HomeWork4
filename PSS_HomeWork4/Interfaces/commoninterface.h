@@ -31,7 +31,7 @@ protected:
     void MakeOrder();
     Address ChooseAddr(bool from);
     CarType ChooseCar();
-    void CreatOrder(const Order& order);
+    void CreateOrder(const Order& order);
     void SeeOrder();
 
 
