@@ -33,10 +33,17 @@ class DataBaseInterface
         TIME,
         DATE
     };
-    enum PERSON_COLUMNS{
+    enum PASSENGER_COLUMNS{
         ORDERS = 1,
         PINNEDADDR,
         ADDRNAME
+    };
+    enum DRIVER_COLUMNS{
+        ORDERS_D = 1,
+        CARMODEL_D,
+        CARTYPE_D,
+        CARNUBER_D,
+        CARCOLOR_D
     };
 
     QXlsx::Document accounts;

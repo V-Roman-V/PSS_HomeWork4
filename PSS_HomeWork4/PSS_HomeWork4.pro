@@ -13,10 +13,10 @@ include(./QXlsx.pri)
 
 SOURCES += \
         Additional_classes/address.cpp \
+        Additional_classes/car.cpp \
         Additional_classes/date.cpp \
         Additional_classes/order.cpp \
         Additional_classes/passport.cpp \
-        Car_classes/car.cpp \
         Enumerations/cartype.cpp \
         Enumerations/dayofweek.cpp \
         Enumerations/gender.cpp \
@@ -35,10 +35,10 @@ SOURCES += \
 
 HEADERS += \
     Additional_classes/address.h \
+    Additional_classes/car.h \
     Additional_classes/date.h \
     Additional_classes/order.h \
     Additional_classes/passport.h \
-    Car_classes/car.h \
     DataBaseInterface/databaseinterface.h \
     Enumerations/cartype.h \
     Enumerations/dayofweek.h \

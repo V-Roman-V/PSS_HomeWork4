@@ -3,16 +3,15 @@
 
 #include <vector>
 #include "user.h"
-#include "Enumerations/rating.h"
 #include "Enumerations/paytype.h"
 #include "Additional_classes/order.h"
 
 class Passenger : public User
 {
 public:
-    Passenger(const User&, const Rating&, const std::vector<Address>&);
+    Passenger(const User&, const std::vector<Address>&);
 
-    //WTF
+    //TODO WTF
     void askAboutCoordinates();//???
 
     Order makeOrder();
@@ -28,8 +27,6 @@ public:
     std::vector<Address> getPinnedAddresses() const;
 
 private:
-    Rating rating;
-    // TODO способ оплаты
     std::vector<Address> pinned_addresses;
     PayType pay_method;
 };

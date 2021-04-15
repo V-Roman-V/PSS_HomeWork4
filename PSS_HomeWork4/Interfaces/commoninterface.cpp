@@ -12,7 +12,7 @@ CommonInterface::~CommonInterface()
 }
 
 //Passenger: 89959280771
-//Driver   : 89192484803
+//Driver   : 333221234
 
 
 bool CommonInterface::start()
@@ -254,7 +254,9 @@ bool CommonInterface::DrivMenu()
 
 void CommonInterface::D_SeeCar()
 {
-
+    Driver* driver = static_cast<Driver*>(person);
+    driver->seeACar();
+    waitENTER();
 }
 
 void CommonInterface::D_TakeOrder()

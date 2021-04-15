@@ -1,4 +1,7 @@
 #include "databaseinterface.h"
+#include <QDebug>
+#include <iostream>
+
 
 void DataBaseInterface::fillDatabase()
 {
@@ -9,10 +12,10 @@ void DataBaseInterface::fillDatabase()
         accounts.selectSheet("Passenger");
         cell = accounts.cellAt(row, ACCOUNTS_COLUMNS::PHONE);
         if(cell == NULL)break;
-        if(!accounts.selectSheet(cell->readValue().toString())){
-            accounts.addSheet(cell->readValue().toString());
-            accounts.selectSheet(cell->readValue().toString());
-        }
+        if(accounts.selectSheet(cell->readValue().toString())) continue;
+
+        accounts.addSheet(cell->readValue().toString());
+        accounts.selectSheet(cell->readValue().toString());
         QXlsx::Format format;
         format.setHorizontalAlignment(QXlsx::Format::AlignHFill);
         format.setPatternBackgroundColor(QColor(Qt::GlobalColor::yellow));
@@ -21,7 +24,25 @@ void DataBaseInterface::fillDatabase()
         accounts.write(1,2,"Pinned addresses",format);
         accounts.write(1,3,"Address description",format);
     }
-    // TODO fill Drivers
+    accounts.selectSheet("Driver");
+    for(int row = 2;;row++){
+        accounts.selectSheet("Driver");
+        cell = accounts.cellAt(row, ACCOUNTS_COLUMNS::PHONE);
+        if(cell == NULL)break;
+        if(accounts.selectSheet(cell->readValue().toString())) continue;
+
+        accounts.addSheet(cell->readValue().toString());
+        accounts.selectSheet(cell->readValue().toString());
+        QXlsx::Format format;
+        format.setHorizontalAlignment(QXlsx::Format::AlignHFill);
+        format.setPatternBackgroundColor(QColor(Qt::GlobalColor::yellow));
+        format.setShrinkToFit(true);
+        accounts.write(1,1,"Orders",format);
+        accounts.write(1,2,"Car model",format);
+        accounts.write(1,3,"Car type",format);
+        accounts.write(1,4,"Car number",format);
+        accounts.write(1,5,"Car color",format);
+    }
     accounts.save();
 }
 
@@ -63,8 +84,42 @@ Driver DataBaseInterface::getDriver(int row)
     // TODO get Drivers
     accounts.selectSheet("Driver");
     People person = getPerson(row);
-    return Driver(User(person,{}),
-                  Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt())
+    accounts.selectSheet(QString::fromStdString(person.getPhone()));
+    std::vector<int> ordersNum;
+    for(int row = 2;;row++){
+        auto cell = accounts.cellAt(row, DRIVER_COLUMNS::ORDERS_D);
+        if(cell == NULL)break;
+        ordersNum.push_back(cell->value().toInt());
+    }
+
+    sort(ordersNum.begin(),ordersNum.end());
+    qDebug()<<ordersNum;
+    std::vector<Order> orders;
+    accounts.selectSheet("Orders");
+    for(auto row:ordersNum){
+        Order order;
+        order.number = row+1;
+        order.from   = accounts.read(row+1,ORDERS_COLUMNS::ADDRESSFROM).toString().toStdString();
+        order.to     = accounts.read(row+1,ORDERS_COLUMNS::ADDRESSTO).toString().toStdString();
+        order.car    = CarType(accounts.read(row+1,ORDERS_COLUMNS::CARTYPE).toInt());
+        order.price  = accounts.read(row+1,ORDERS_COLUMNS::PRICE).toDouble();
+        order.time   = accounts.read(row+1,ORDERS_COLUMNS::TIME).toTime();
+        order.date   = accounts.read(row+1,ORDERS_COLUMNS::DATE).toDate();
+        orders.push_back(order);
+        std::cout<<order;
+    }
+
+    accounts.selectSheet(QString::fromStdString(person.getPhone()));
+    Car car;
+    car.model = accounts.read(2,DRIVER_COLUMNS::CARMODEL_D).toString().toStdString();
+    car.type  = CarType(accounts.read(2,DRIVER_COLUMNS::CARTYPE_D).toInt());
+    car.coordinates  = QPointF(0,0);
+    car.color = accounts.read(2,DRIVER_COLUMNS::CARCOLOR_D).toString().toStdString();
+    car.number = accounts.read(2,DRIVER_COLUMNS::CARNUBER_D).toString().toStdString();
+    car.setBottles(4);
+    accounts.selectSheet("Driver");
+    return Driver(User(person,orders,Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt())),
+                  car
                   );
 }
 
@@ -82,15 +137,15 @@ Passenger DataBaseInterface::getPassenger(int row)
     std::vector<int> ordersNum;
     std::vector<Address> addresses;
     for(int row = 2;;row++){
-        auto cell = accounts.cellAt(row, PERSON_COLUMNS::ORDERS);
+        auto cell = accounts.cellAt(row, PASSENGER_COLUMNS::ORDERS);
         if(cell == NULL)break;
         ordersNum.push_back(cell->value().toInt());
     }
     for(int row = 2;;row++){
-        auto cell = accounts.cellAt(row, PERSON_COLUMNS::PINNEDADDR);
+        auto cell = accounts.cellAt(row, PASSENGER_COLUMNS::PINNEDADDR);
         if(cell == NULL)break;
         Address address = cell->value().toString().toStdString();
-        auto name = accounts.cellAt(row, PERSON_COLUMNS::ADDRNAME);
+        auto name = accounts.cellAt(row, PASSENGER_COLUMNS::ADDRNAME);
         if(name != NULL)
             address.setName( name->value().toString().toStdString());
 
@@ -113,8 +168,7 @@ Passenger DataBaseInterface::getPassenger(int row)
     }
 
     accounts.selectSheet("Passenger");
-    return Passenger(User(person,orders),
-                     Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt()),
+    return Passenger(User(person,orders,Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt())),
                      addresses
                      );
 }

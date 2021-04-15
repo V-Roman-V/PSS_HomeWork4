@@ -1,7 +1,7 @@
 #include "passenger.h"
 
-Passenger::Passenger(const User &u, const Rating &rating, const std::vector<Address> &addresses)
-    :User(u), rating(rating), pinned_addresses(addresses)
+Passenger::Passenger(const User &u, const std::vector<Address> &addresses)
+    :User(u), pinned_addresses(addresses)
 {std::cout<<"ok";}
 
 std::string Passenger::getFullInfo() const

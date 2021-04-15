@@ -3,31 +3,28 @@
 
 #include "user.h"
 #include <vector>
-#include "Enumerations/rating.h"
-#include "Enumerations/cartype.h"
 #include "Enumerations/status.h"
 #include "Additional_classes/order.h"
+#include "Additional_classes/car.h"
 
 class Driver : public User
 {
 public:
-    Driver(const User& p, Rating rating);
+    Driver(const User& u, const Car& car);
 
     std::vector<Order> getOrderHistory() const;
 
-    // TODO implement
     std::string getFullInfo()const override;
 
-    void seeACar(); // print info about Car;
+    void seeACar() const;
 
-    void updateStatus();
+    void updateStatus(Status s);
 
     Order takeOrder();
 
 private:
-    Rating rating;
     std::vector<Order> order_history;
-    CarType car;
+    Car car;
     std::vector<Order> pinned_addresses;
     Status status;
 };

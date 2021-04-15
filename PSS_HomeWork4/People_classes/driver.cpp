@@ -1,7 +1,7 @@
 #include "driver.h"
 
-Driver::Driver(const User &u, Rating rating)
-    :User(u), rating(rating)
+Driver::Driver(const User& u, const Car& car)
+    :User(u), car(car)
 {}
 
 std::vector<Order> Driver::getOrderHistory() const {
@@ -10,8 +10,25 @@ std::vector<Order> Driver::getOrderHistory() const {
 
 std::string Driver::getFullInfo() const
 {
+    // TODO implement
     std::stringstream info;
     info<<User::getFullInfo();
     return info.str();
+}
+
+void Driver::seeACar() const
+{
+    car.print();
+}
+
+void Driver::updateStatus(Status s)
+{
+    status = s;
+}
+
+Order Driver::takeOrder()
+{
+    //TODO
+
 }
 

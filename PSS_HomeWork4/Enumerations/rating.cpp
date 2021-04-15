@@ -1,4 +1,5 @@
 #include "rating.h"
+#include <ostream>
 
 std::string Rating::enumToStr(Rating::RatingName name){
     switch(name){
@@ -22,6 +23,6 @@ Rating::RatingName Rating::intToEnum(int val){
 }
 
 std::ostream& operator<<(std::ostream &out, const Rating &R){
-    return out<<Rating::enumToStr(R.rating);
+    return out<<Rating::enumToStr(R.rating)<<"("<<R.number()<<")";
 }
 
