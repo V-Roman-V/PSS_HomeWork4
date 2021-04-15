@@ -31,7 +31,9 @@ class DataBaseInterface
         CARTYPE,
         PRICE,
         TIME,
-        DATE
+        DATE,
+        A_Status,
+        A_LASTORDER
     };
     enum PASSENGER_COLUMNS{
         ORDERS = 1,
@@ -59,9 +61,15 @@ protected:
 
     int findPassenger(const std::string& phone);
     Passenger getPassenger(int p);
+    void savePinAddress(const std::string& phone, const Address& address);
+
+    void saveActiveOrder(const Order& order);
+    Status getOrderStatus(int number);
 
     int findDriver(const std::string& phone);
     Driver getDriver(int p);
+
+    std::vector<Order> getActiveOrder(CarType type);
 };
 
 #endif // DATABASEINTERFACE_H

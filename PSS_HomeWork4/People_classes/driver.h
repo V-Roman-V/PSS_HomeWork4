@@ -16,11 +16,11 @@ public:
 
     std::string getFullInfo()const override;
 
-    void seeACar() const;
-
     void updateStatus(Status s);
 
     Order takeOrder();
+
+    Car getCar() const;
 
 private:
     std::vector<Order> order_history;

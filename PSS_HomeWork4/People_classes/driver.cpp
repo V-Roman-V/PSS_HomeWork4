@@ -16,11 +16,6 @@ std::string Driver::getFullInfo() const
     return info.str();
 }
 
-void Driver::seeACar() const
-{
-    car.print();
-}
-
 void Driver::updateStatus(Status s)
 {
     status = s;
@@ -30,5 +25,10 @@ Order Driver::takeOrder()
 {
     //TODO
 
+}
+
+Car Driver::getCar() const
+{
+    return car;
 }
 

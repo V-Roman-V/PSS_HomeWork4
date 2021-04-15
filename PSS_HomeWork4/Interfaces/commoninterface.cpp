@@ -139,7 +139,7 @@ void CommonInterface::P_AddPinAddr()
     if (input.size()>0)
         address.setName(input);
     static_cast<Passenger*>(person)->addPinAddress(address);
-    // TODO: save new address to the excel
+    savePinAddress(person->getPhone(),address);
 }
 
 void CommonInterface::P_MakeOrder()
@@ -153,10 +153,11 @@ void CommonInterface::P_MakeOrder()
         order.time  = QTime(rand()%3,rand()%60);
         order.price = order.time.hour()*60 + order.time.minute() + order.car.number()*100; // time + car*100
         order.date  = Date::getNowDate();
+        order.number = -1;
         P_CreateOrder(order);
         order.number = getNextOrderNumber();
         person->setCurrentOrder(order);
-        // TODO: save new address to the excel
+        saveActiveOrder(order);
     }  catch (int exit) {}
 }
 
@@ -220,16 +221,22 @@ void CommonInterface::P_SeeOrder()
     clear();
     print("Your current order is: ");
     person->getCurrentOrder().print();
-    print("If you want cancel it, print \"yes\" or type ENTER to return");
-    cout<<'>';cin.get();
-    getline(cin,input);
-    if(input == "yes")
-            person->deleteCurrentOrder();
+    Status status = getOrderStatus(person->getCurrentOrder().number);
+    print("Status is:"+static_cast<std::string>(status));
+    if(status.number() == Status(0).number()){
+        print("If you want cancel it, print \"yes\" or type ENTER to return");
+        cout<<'>';cin.get();
+        getline(cin,input);
+        if(input == "yes") // TODO delete from database
+                person->deleteCurrentOrder();
+    } else
+        waitENTER();
 }
 
 
 bool CommonInterface::DrivMenu()
 {
+    //TODO status
     static const vector<string> Actions = {"See_history","See_car","take_order","exit"};//...
     static const vector<string> Actions_order = {"See_history","See_car","See_current_order","exit"};//...
 
@@ -255,13 +262,26 @@ bool CommonInterface::DrivMenu()
 void CommonInterface::D_SeeCar()
 {
     Driver* driver = static_cast<Driver*>(person);
-    driver->seeACar();
+    driver->getCar().print();
     waitENTER();
 }
 
 void CommonInterface::D_TakeOrder()
 {
-
+    Driver* driver = static_cast<Driver*>(person);
+    auto orders = getActiveOrder(driver->getCar().type);
+    if(orders.size() == 0){
+        print("There is no orders for this car type");
+        waitENTER();
+        return;
+    }
+    clear();
+    print("Order List:");
+    int i=1;
+    for(const auto& order:orders){
+        cout<<i++<<")";order.print();
+    }
+    waitENTER();
 }
 
 void CommonInterface::D_SeeOrder()

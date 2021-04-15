@@ -25,7 +25,8 @@ public:
 
     static std::vector<std::string> getList();
 
-    operator CarTypeNames(){return car;}
+    operator CarTypeNames()const{return car;}
+    operator std::string()const{return enumToStr(car);}
 
     int number() const {return static_cast<int>(car);}
 

@@ -11,7 +11,7 @@ void Address::setName(const std::string& name)
     shortName = name;
 }
 
-std::string Address::name()
+std::string Address::name() const
 {
     return shortName;
 }

@@ -10,7 +10,7 @@ class Address: public std::string
 public:
     Address(const std::string& s = "");
     void setName(const std::string&);
-    std::string name();
+    std::string name() const ;
 
     void print() const;
     friend std::ostream &operator<< (std::ostream &out, const Address &A);

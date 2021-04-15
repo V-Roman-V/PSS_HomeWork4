@@ -19,7 +19,9 @@ public:
     Date(){operator=(Date::getNowDate());}
     Date(uint16_t d, uint16_t m, uint16_t y):Date(d,m,y,0){}
     Date(const Date& d){operator=(d);}
-    Date(const QDate& d);
+    Date(const QDate& d):Date(d.day(),d.month(),d.year()){}
+
+    operator QDate()const{return QDate(year,month.number(),day);}
 
     bool isCorrect() const;
 

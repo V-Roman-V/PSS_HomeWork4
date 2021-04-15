@@ -6,8 +6,8 @@
 class Status
 {
     enum class StatusName{
-        Busy,
-        Free
+        Free,
+        Busy
     } status;
 
     static std::string enumToStr(StatusName name);
@@ -17,7 +17,8 @@ class Status
 public:
     explicit Status(int s = 0): status( intToEnum(s) ){}
 
-    operator StatusName(){return status;}
+    operator StatusName()const{return status;}
+    operator std::string()const{return enumToStr(status);}
 
     int number() const {return static_cast<int>(status);}
 

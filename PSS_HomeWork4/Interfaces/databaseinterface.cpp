@@ -123,6 +123,30 @@ Driver DataBaseInterface::getDriver(int row)
                   );
 }
 
+std::vector<Order> DataBaseInterface::getActiveOrder(CarType type)
+{
+    std::vector<Order> orders;
+    accounts.selectSheet("Active orders");
+    for(int row = 2;;row++){
+        auto *cell = accounts.cellAt(row, ORDERS_COLUMNS::ORDERNUMBER);
+        if(cell == NULL)break;
+        Order order;
+        order.car    = CarType(accounts.read(row,ORDERS_COLUMNS::CARTYPE).toInt());
+        std::cout<<order.car<<" "<<type<<std::endl;
+        if(order.car.number() != type.number()) continue;
+        std::cout<<order.car<<" "<<type<<std::endl;
+
+        order.number = accounts.read(row,ORDERS_COLUMNS::ORDERNUMBER).toInt();
+        order.from   = accounts.read(row,ORDERS_COLUMNS::ADDRESSFROM).toString().toStdString();
+        order.to     = accounts.read(row,ORDERS_COLUMNS::ADDRESSTO).toString().toStdString();
+        order.price  = accounts.read(row,ORDERS_COLUMNS::PRICE).toDouble();
+        order.time   = accounts.read(row,ORDERS_COLUMNS::TIME).toTime();
+        order.date   = accounts.read(row,ORDERS_COLUMNS::DATE).toDate();
+        orders.push_back(order);
+    }
+    return orders;
+}
+
 int DataBaseInterface::findPassenger(const std::string& phone)
 {
     accounts.selectSheet("Passenger");
@@ -157,7 +181,7 @@ Passenger DataBaseInterface::getPassenger(int row)
     accounts.selectSheet("Orders");
     for(auto row:ordersNum){
         Order order;
-        order.number = row+1;
+        order.number = accounts.read(row+1,ORDERS_COLUMNS::ORDERNUMBER).toInt();
         order.from   = accounts.read(row+1,ORDERS_COLUMNS::ADDRESSFROM).toString().toStdString();
         order.to     = accounts.read(row+1,ORDERS_COLUMNS::ADDRESSTO).toString().toStdString();
         order.car    = CarType(accounts.read(row+1,ORDERS_COLUMNS::CARTYPE).toInt());
@@ -173,6 +197,51 @@ Passenger DataBaseInterface::getPassenger(int row)
                      );
 }
 
+void DataBaseInterface::savePinAddress(const std::string &phone, const Address &address)
+{
+    accounts.selectSheet(QString::fromStdString(phone));
+    for(int row=2;;row++){;
+        auto *cell = accounts.cellAt(row, PASSENGER_COLUMNS::PINNEDADDR);
+        if(cell != NULL)continue;
+        accounts.write(row,PASSENGER_COLUMNS::PINNEDADDR,QString::fromStdString(address));
+        if(address.name().size()>0)
+            accounts.write(row,PASSENGER_COLUMNS::ADDRNAME,QString::fromStdString(address.name()));
+        break;
+    }
+    accounts.save();
+}
+
+void DataBaseInterface::saveActiveOrder(const Order &order)
+{
+    accounts.selectSheet("Active orders");
+    for(int row=2;;row++){;
+        auto *cell = accounts.cellAt(row, ORDERS_COLUMNS::ORDERNUMBER);
+        if(cell != NULL)continue;
+        accounts.write(row,ORDERS_COLUMNS::ORDERNUMBER,order.number);
+        accounts.write(row,ORDERS_COLUMNS::ADDRESSFROM,QString::fromStdString(order.from));
+        accounts.write(row,ORDERS_COLUMNS::ADDRESSTO  ,QString::fromStdString(order.to));
+        accounts.write(row,ORDERS_COLUMNS::CARTYPE    ,order.car.number());
+        accounts.write(row,ORDERS_COLUMNS::PRICE      ,order.price);
+        accounts.write(row,ORDERS_COLUMNS::TIME       ,order.time);
+        accounts.write(row,ORDERS_COLUMNS::DATE       ,static_cast<QDate>(order.date));
+        accounts.write(row,ORDERS_COLUMNS::A_Status   ,Status(0).number());
+        break;
+    }
+    accounts.save();
+}
+
+Status DataBaseInterface::getOrderStatus(int number)
+{
+    accounts.selectSheet("Active orders");
+    for(int row=2;;row++){;
+        auto *cell = accounts.cellAt(row, ORDERS_COLUMNS::ORDERNUMBER);
+        if(cell == NULL)break;
+        if(cell->value().toInt() == number)
+            return Status(accounts.read(row, ORDERS_COLUMNS::A_Status).toInt());
+    }
+    return Status(0);
+}
+
 DataBaseInterface::DataBaseInterface()
     :accounts(QCoreApplication::applicationDirPath()+"/DataBase/Accounts.xlsx")
 {
@@ -183,8 +252,11 @@ DataBaseInterface::DataBaseInterface()
 
 int DataBaseInterface::getNextOrderNumber()
 {
-    // TODO
-    return -1;
+    accounts.selectSheet("Active orders");
+    int num = accounts.read(2,ORDERS_COLUMNS::A_LASTORDER).toInt();
+    accounts.write(2,ORDERS_COLUMNS::A_LASTORDER,num+1);
+    accounts.save();
+    return num;
 }
 
 
