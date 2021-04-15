@@ -15,6 +15,9 @@ public:
 
     std::vector<Order> getOrderHistory() const;
 
+    // TODO implement
+    std::string getFullInfo()const override;
+
     void seeACar(); // print info about Car;
 
     void updateStatus();

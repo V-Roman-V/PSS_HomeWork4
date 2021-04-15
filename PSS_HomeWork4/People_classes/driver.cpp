@@ -8,3 +8,10 @@ std::vector<Order> Driver::getOrderHistory() const {
     return order_history;
 }
 
+std::string Driver::getFullInfo() const
+{
+    std::stringstream info;
+    info<<User::getFullInfo();
+    return info.str();
+}
+

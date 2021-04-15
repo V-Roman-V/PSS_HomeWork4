@@ -93,21 +93,21 @@ bool CommonInterface::PassMenu()
         if(num ==-1) continue; // try Again
         if(num == (Act.size()-1)) return false;
         switch(num){
-            case 0: See_History();break;
-            case 1: ChangePay();break;
-            case 2: AddPinAddr();break;
-            case 3: person->hasActiveOrder()?SeeOrder():MakeOrder();break;
+            case 0: SeeHistory();break;
+            case 1: P_ChangePay();break;
+            case 2: P_AddPinAddr();break;
+            case 3: person->hasActiveOrder()?P_SeeOrder():P_MakeOrder();break;
         }
     }
 }
 
-void CommonInterface::See_History()
+void CommonInterface::SeeHistory()
 {
     person->printOrderHistory();
     waitENTER();
 }
 
-void CommonInterface::ChangePay()
+void CommonInterface::P_ChangePay()
 {
     static const vector<string> Type = {PayType(0),PayType(1),"back"};
     string input;
@@ -125,7 +125,7 @@ void CommonInterface::ChangePay()
     }
 }
 
-void CommonInterface::AddPinAddr()
+void CommonInterface::P_AddPinAddr()
 {
     string input;
     print("Enter address to pin or go \"(-)back\"");
@@ -142,25 +142,25 @@ void CommonInterface::AddPinAddr()
     // TODO: save new address to the excel
 }
 
-void CommonInterface::MakeOrder()
+void CommonInterface::P_MakeOrder()
 {
     string input;
     Order order;
     try {
-        order.from  = ChooseAddr(true);
-        order.to    = ChooseAddr(false);
-        order.car   = ChooseCar();
+        order.from  = P_ChooseAddr(true);
+        order.to    = P_ChooseAddr(false);
+        order.car   = P_ChooseCar();
         order.time  = QTime(rand()%3,rand()%60);
         order.price = order.time.hour()*60 + order.time.minute() + order.car.number()*100; // time + car*100
         order.date  = Date::getNowDate();
-        CreateOrder(order);
+        P_CreateOrder(order);
         order.number = getNextOrderNumber();
         person->setCurrentOrder(order);
         // TODO: save new address to the excel
     }  catch (int exit) {}
 }
 
-Address CommonInterface::ChooseAddr(bool from)
+Address CommonInterface::P_ChooseAddr(bool from)
 {
     string input;
     Passenger* pass = static_cast<Passenger*>(person);
@@ -182,7 +182,7 @@ Address CommonInterface::ChooseAddr(bool from)
     throw -1;
 }
 
-CarType CommonInterface::ChooseCar()
+CarType CommonInterface::P_ChooseCar()
 {
     string input;
     const vector<string> types = CarType::getList();
@@ -197,7 +197,7 @@ CarType CommonInterface::ChooseCar()
     throw -1;
 }
 
-void CommonInterface::CreateOrder(const Order& order)
+void CommonInterface::P_CreateOrder(const Order& order)
 {
     static const vector<string> consent = {"confirm", "cancel"};
     string input;
@@ -214,7 +214,7 @@ void CommonInterface::CreateOrder(const Order& order)
     }
 }
 
-void CommonInterface::SeeOrder()
+void CommonInterface::P_SeeOrder()
 {
     string input;
     clear();
@@ -229,6 +229,40 @@ void CommonInterface::SeeOrder()
 
 
 bool CommonInterface::DrivMenu()
+{
+    static const vector<string> Actions = {"See_history","See_car","take_order","exit"};//...
+    static const vector<string> Actions_order = {"See_history","See_car","See_current_order","exit"};//...
+
+    string input;
+    while(true){
+        clear();
+        print("You are successfully logged in as:");
+        print(person->getFullInfo());
+        const auto& Act = person->hasActiveOrder()?Actions_order:Actions;
+        print("Select the option: "+getListOptions(Act));
+        getInput(input);
+        int num = calculateInput(input,Act);
+        if(num ==-1) continue; // try Again
+        if(num == (Act.size()-1)) return false;
+        switch(num){
+            case 0: SeeHistory();break;
+            case 1: D_SeeCar();break;
+            case 2: person->hasActiveOrder()?D_SeeOrder():D_TakeOrder();break;
+        }
+    }
+}
+
+void CommonInterface::D_SeeCar()
+{
+
+}
+
+void CommonInterface::D_TakeOrder()
+{
+
+}
+
+void CommonInterface::D_SeeOrder()
 {
 
 }

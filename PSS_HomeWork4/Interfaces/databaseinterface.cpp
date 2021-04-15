@@ -21,6 +21,7 @@ void DataBaseInterface::fillDatabase()
         accounts.write(1,2,"Pinned addresses",format);
         accounts.write(1,3,"Address description",format);
     }
+    // TODO fill Drivers
     accounts.save();
 }
 
@@ -31,7 +32,6 @@ int DataBaseInterface::findPerson(const std::string& phone) const
         cell = accounts.cellAt(row, ACCOUNTS_COLUMNS::PHONE);
         if(cell == NULL)break;
         std::string var = cell->readValue().toString().toStdString();
-//        std::cout<<var<<std::endl;
         if(var == phone)
             return row;
     }
@@ -60,6 +60,7 @@ int DataBaseInterface::findDriver(const std::string& phone)
 
 Driver DataBaseInterface::getDriver(int row)
 {
+    // TODO get Drivers
     accounts.selectSheet("Driver");
     People person = getPerson(row);
     return Driver(User(person,{}),
@@ -97,7 +98,6 @@ Passenger DataBaseInterface::getPassenger(int row)
     }
 
     sort(ordersNum.begin(),ordersNum.end());
-    std::cout<<"yes";
     std::vector<Order> orders;
     accounts.selectSheet("Orders");
     for(auto row:ordersNum){
@@ -122,7 +122,6 @@ Passenger DataBaseInterface::getPassenger(int row)
 DataBaseInterface::DataBaseInterface()
     :accounts(QCoreApplication::applicationDirPath()+"/DataBase/Accounts.xlsx")
 {
-//    std::cout<<(QCoreApplication::applicationDirPath()+"/DataBase/Accounts.xlsx").toStdString()<<std::endl;
     bool loadDataBase = accounts.load(); // load excel file
     assert(loadDataBase);
 //    fillDatabase();

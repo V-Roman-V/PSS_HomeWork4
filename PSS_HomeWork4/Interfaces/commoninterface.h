@@ -22,17 +22,23 @@ protected:
     bool Hello();
     bool Login();
     bool Menu();
-    bool PassMenu();
-    bool DrivMenu();
 
-    void See_History();
-    void ChangePay();
-    void AddPinAddr();
-    void MakeOrder();
-    Address ChooseAddr(bool from);
-    CarType ChooseCar();
-    void CreateOrder(const Order& order);
-    void SeeOrder();
+    void SeeHistory();
+
+    bool DrivMenu();
+    void D_SeeCar();
+    void D_TakeOrder();
+    void D_SeeOrder();
+
+    // TODO put together
+    bool PassMenu();
+    void P_ChangePay();
+    void P_AddPinAddr();
+    void P_MakeOrder();
+    Address P_ChooseAddr(bool from);
+    CarType P_ChooseCar();
+    void P_CreateOrder(const Order& order);
+    void P_SeeOrder();
 
 
     static inline void print(const std::string& s){std::cout<<s<<std::endl;}

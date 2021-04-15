@@ -48,6 +48,8 @@ class DataBaseInterface
 protected:
     DataBaseInterface();
 
+    int getNextOrderNumber();
+
     int findPassenger(const std::string& phone);
     Passenger getPassenger(int p);
 
