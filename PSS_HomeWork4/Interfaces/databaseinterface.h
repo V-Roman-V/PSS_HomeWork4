@@ -10,6 +10,8 @@
 #include "People_classes/user.h"
 #include "People_classes/passenger.h"
 #include "People_classes/driver.h"
+#include "People_classes/admin.h"
+#include "Enumerations/persontype.h"
 
 
 class DataBaseInterface
@@ -56,12 +58,21 @@ class DataBaseInterface
     int findPerson(const std::string& phone)const;
     People getPerson(int p) const;
 protected:
+    std::pair<PersonType,int> getInfo(const std::string& phone);
+
     DataBaseInterface();
 
     int getNextOrderNumber();
 
     int findPassenger(const std::string& phone);
     Passenger getPassenger(int p);
+
+    int findDriver(const std::string& phone);
+    Driver getDriver(int p);
+
+    int findAdmin(const std::string& phone);
+    Admin getAdmin(int p);
+
     void savePinAddress(const std::string& phone, const Address& address);
 
     void closeActiveOrder(const Order& order, const std::string& Dphone);
@@ -71,9 +82,6 @@ protected:
 
     std::pair<bool,Status> getOrderStatus(int number);
     std::string getActiveOrderPhone(int number);
-
-    int findDriver(const std::string& phone);
-    Driver getDriver(int p);
 
     std::vector<Order> getActiveOrder(const std::vector<Car>&type);
     std::pair<bool,Order> getActiveOrder(const std::string& phone);

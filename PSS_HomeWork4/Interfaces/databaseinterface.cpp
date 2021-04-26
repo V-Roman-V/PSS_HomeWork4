@@ -1,5 +1,4 @@
 #include "databaseinterface.h"
-#include <QDebug>
 #include <iostream>
 
 
@@ -70,7 +69,25 @@ People DataBaseInterface::getPerson(int row) const
                   Date(accounts.cellAt(row,ACCOUNTS_COLUMNS::DATEOFBIRTH)->readValue().toDate()),
                   Passport(s,n),
                   accounts.cellAt(row, ACCOUNTS_COLUMNS::PHONE)->readValue().toString().toStdString()
-                 );
+                  );
+}
+
+std::pair<PersonType, int> DataBaseInterface::getInfo(const std::string &phone)
+{
+    int t = 0;
+    int p = -1;
+    while(true) {
+        t = 0;
+        p = findPassenger(phone);
+        if(p != -1)break;
+        t = 1;
+        p = findDriver(phone);
+        if(p != -1)break;
+        t = 2;
+        p = findAdmin(phone);
+        break;
+    }
+    return std::make_pair(PersonType(t), p);
 }
 
 int DataBaseInterface::findDriver(const std::string& phone)
@@ -92,7 +109,6 @@ Driver DataBaseInterface::getDriver(int row)
     }
 
     sort(ordersNum.begin(),ordersNum.end());
-    qDebug()<<ordersNum;
     std::vector<Order> orders;
     accounts.selectSheet("Orders");
     for(auto row:ordersNum){
@@ -105,7 +121,6 @@ Driver DataBaseInterface::getDriver(int row)
         order.time   = accounts.read(row+1,ORDERS_COLUMNS::TIME).toTime();
         order.date   = accounts.read(row+1,ORDERS_COLUMNS::DATE).toDate();
         orders.push_back(order);
-        std::cout<<order;
     }
 
     accounts.selectSheet(QString::fromStdString(person.getPhone()));
@@ -127,6 +142,19 @@ Driver DataBaseInterface::getDriver(int row)
     return Driver(User(person,orders,Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt())),
                   cars
                   );
+}
+
+int DataBaseInterface::findAdmin(const std::string &phone)
+{
+    accounts.selectSheet("Admin");
+    return findPerson(phone);
+}
+
+Admin DataBaseInterface::getAdmin(int row)
+{
+    accounts.selectSheet("Admin");
+    People person = getPerson(row);
+    return Admin(person);
 }
 
 std::vector<Order> DataBaseInterface::getActiveOrder(const std::vector<Car>& cars)

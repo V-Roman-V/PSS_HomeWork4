@@ -6,10 +6,11 @@
 
 class PersonType
 {
-    static const uint8_t countTypes = 2;
+    static const uint8_t countTypes = 3;
     enum class PersonName{
         Passenger = 0,  // 1
-        Driver
+        Driver,
+        Admin
     } person;
 
     static std::string enumToStr(PersonName name);

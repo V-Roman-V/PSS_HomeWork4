@@ -4,6 +4,7 @@ std::string PersonType::enumToStr(PersonType::PersonName name){
     switch(name){
         case PersonName::Passenger: return "Passenger";
         case PersonName::Driver:    return "Driver";
+        case PersonName::Admin:     return "Admin";
     }
 }
 
@@ -11,6 +12,7 @@ PersonType::PersonName PersonType::intToEnum(int val){
     switch(val){
         case 0: return PersonName::Passenger;
         case 1: return PersonName::Driver;
+        case 2: return PersonName::Admin;
     }
     return PersonName::Passenger;
 }

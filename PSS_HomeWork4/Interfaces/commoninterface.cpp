@@ -23,7 +23,8 @@ bool CommonInterface::start()
 
 bool CommonInterface::Hello()
 {
-    static const vector<string> Roles = {PersonType(0),PersonType(1),"exit"};
+    vector<string> Roles = PersonType::getList();
+    Roles.push_back("exit");
     string input;
     while(true){
         clear();
@@ -32,7 +33,7 @@ bool CommonInterface::Hello()
         getInput(input);
         int num = calculateInput(input,Roles);
         if(num==-1) continue; // try Again
-        if(num== 2) return false;
+        if(num==Roles.size()-1) return false;
         type = PersonType(num);
         return true;
 
@@ -60,6 +61,13 @@ bool CommonInterface::Login()
             if(num==-1) continue; // try Again
             gateway = new DriverGateway(this);
             gateway->person = new Driver(getDriver(num));
+            return true;
+        }
+        if(type == PersonType(2)){
+            int num = findAdmin(input);
+            if(num==-1) continue; // try Again
+            gateway = new AdminGateway(this);
+            gateway->person = new Admin(getAdmin(num));
             return true;
         }
         assert(!"Incorrect person type");
@@ -90,15 +98,37 @@ bool CommonInterface::AdminGateway::Menu()
 
 void CommonInterface::AdminGateway::seeInfo()
 {
-
+    std::string input;
+    while(true){
+        clear();
+        print("Enter the phone number of the person you want to find out information about or \"-\" to exit}");
+        getInput(input);
+        if(input == "-" or input == "exit")return;
+        if(!isNumber(input)) continue; // try Again
+        auto pair = interface->getInfo(input);
+        int num = pair.second;
+        if(num==-1) continue; // try Again
+        PersonType type = pair.first;
+        clear();
+        std::string info;
+        if(type == PersonType(0))
+            info = interface->getPassenger(num).getFullInfo();
+        if(type == PersonType(1))
+            info = interface->getDriver(num).getFullInfo();
+        if(type == PersonType(2))
+            info = interface->getAdmin(num).getFullInfo();
+        std::cout<<type<<":\n"<<info;
+        break;
+    }
+    waitENTER();
 }
 
-void CommonInterface::AdminGateway::blockUser()
+void CommonInterface::AdminGateway::blockUser() //TODO
 {
 
 }
 
-void CommonInterface::AdminGateway::verifyCar()
+void CommonInterface::AdminGateway::verifyCar() //TODO
 {
 
 }
