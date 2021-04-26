@@ -196,15 +196,20 @@ Passenger DataBaseInterface::getPassenger(int row)
     sort(ordersNum.begin(),ordersNum.end());
     std::vector<Order> orders;
     accounts.selectSheet("Orders");
-    for(auto row:ordersNum){
+    for(auto num:ordersNum){
+        int row =2;
+        for(;;row++){
+            auto cell = accounts.cellAt(row, ORDERS_COLUMNS::ORDERNUMBER);
+            if(cell == NULL || cell->value().toInt() == num)break;
+        }
         Order order;
-        order.number = accounts.read(row+1,ORDERS_COLUMNS::ORDERNUMBER).toInt();
-        order.from   = accounts.read(row+1,ORDERS_COLUMNS::ADDRESSFROM).toString().toStdString();
-        order.to     = accounts.read(row+1,ORDERS_COLUMNS::ADDRESSTO).toString().toStdString();
-        order.car    = CarType(accounts.read(row+1,ORDERS_COLUMNS::CARTYPE).toInt());
-        order.price  = accounts.read(row+1,ORDERS_COLUMNS::PRICE).toDouble();
-        order.time   = accounts.read(row+1,ORDERS_COLUMNS::TIME).toTime();
-        order.date   = accounts.read(row+1,ORDERS_COLUMNS::DATE).toDate();
+        order.number = accounts.read(row,ORDERS_COLUMNS::ORDERNUMBER).toInt();
+        order.from   = accounts.read(row,ORDERS_COLUMNS::ADDRESSFROM).toString().toStdString();
+        order.to     = accounts.read(row,ORDERS_COLUMNS::ADDRESSTO).toString().toStdString();
+        order.car    = CarType(accounts.read(row,ORDERS_COLUMNS::CARTYPE).toInt());
+        order.price  = accounts.read(row,ORDERS_COLUMNS::PRICE).toDouble();
+        order.time   = accounts.read(row,ORDERS_COLUMNS::TIME).toTime();
+        order.date   = accounts.read(row,ORDERS_COLUMNS::DATE).toDate();
         orders.push_back(order);
     }
 
