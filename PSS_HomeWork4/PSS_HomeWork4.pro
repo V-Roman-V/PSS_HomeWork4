@@ -27,6 +27,7 @@ SOURCES += \
         Enumerations/status.cpp \
         Interfaces/commoninterface.cpp \
         Interfaces/databaseinterface.cpp \
+        People_classes/admin.cpp \
         People_classes/driver.cpp \
         People_classes/passenger.cpp \
         People_classes/people.cpp \
@@ -50,6 +51,7 @@ HEADERS += \
     Enumerations/status.h \
     Interfaces/commoninterface.h \
     Interfaces/databaseinterface.h \
+    People_classes/admin.h \
     People_classes/driver.h \
     People_classes/passenger.h \
     People_classes/people.h \
