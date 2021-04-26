@@ -76,7 +76,7 @@ bool CommonInterface::PassengerGateway::Menu()
         clear();
         print("You are successfully logged in as:");
         print(person->getFullInfo());
-        const auto& Act = person->hasActiveOrder()?Actions_order:Actions;
+        const auto& Act = pass()->hasActiveOrder()?Actions_order:Actions;
         print("Select the option: "+getListOptions(Act));
         getInput(input);
         int num = calculateInput(input,Act);
@@ -86,15 +86,9 @@ bool CommonInterface::PassengerGateway::Menu()
             case 0: SeeHistory();break;
             case 1: ChangePay();break;
             case 2: AddPinAddr();break;
-            case 3: person->hasActiveOrder()?SeeOrder():MakeOrder();break;
+            case 3: pass()->hasActiveOrder()?SeeOrder():MakeOrder();break;
         }
     }
-}
-
-void CommonInterface::Gateway::SeeHistory()
-{
-    person->printOrderHistory();
-    waitENTER();
 }
 
 void CommonInterface::PassengerGateway::ChangePay()
@@ -146,7 +140,7 @@ void CommonInterface::PassengerGateway::MakeOrder()
         order.number = -1;
         CreateOrder(order);
         order.number = interface->getNextOrderNumber();
-        person->setCurrentOrder(order);
+        pass()->setCurrentOrder(order);
         interface->saveActiveOrder(order,person->getPhone());
     }  catch (int exit) {}
 }
@@ -210,11 +204,11 @@ void CommonInterface::PassengerGateway::SeeOrder()
     string input;
     clear();
     print("Your current order is: ");
-    person->getCurrentOrder().print();
-    auto pair = interface->getOrderStatus(person->getCurrentOrder().number);
+    pass()->getCurrentOrder().print();
+    auto pair = interface->getOrderStatus(pass()->getCurrentOrder().number);
     if(pair.first == false){ // add to history
         print("Your order has been successfully completed");
-        person->deleteCurrentOrder();
+        pass()->deleteCurrentOrder();
         waitENTER();
         return;
     }
@@ -225,11 +219,17 @@ void CommonInterface::PassengerGateway::SeeOrder()
         cout<<'>';cin.get();
         getline(cin,input);
         if(input == "yes"){
-            interface->deleteActiveOrder(person->getCurrentOrder());
-            person->deleteCurrentOrder();
+            interface->deleteActiveOrder(pass()->getCurrentOrder());
+            pass()->deleteCurrentOrder();
         }
     } else
         waitENTER();
+}
+
+void CommonInterface::PassengerGateway::SeeHistory()
+{
+    pass()->printOrderHistory();
+    waitENTER();
 }
 
 
@@ -243,7 +243,7 @@ bool CommonInterface::DriverGateway::Menu()
         clear();
         print("You are successfully logged in as:");
         print(person->getFullInfo());
-        const auto& Act = person->hasActiveOrder()?Actions_order:Actions;
+        const auto& Act = driver()->hasActiveOrder()?Actions_order:Actions;
         print("Select the option: "+getListOptions(Act));
         getInput(input);
         int num = calculateInput(input,Act);
@@ -253,15 +253,20 @@ bool CommonInterface::DriverGateway::Menu()
             case 0: SeeHistory();break;
             case 1: setStatus();break;
             case 2: SeeCar();break;
-            case 3: person->hasActiveOrder()?SeeOrder():TakeOrder();break;
+            case 3: driver()->hasActiveOrder()?SeeOrder():TakeOrder();break;
         }
     }
 }
 
+void CommonInterface::DriverGateway::SeeHistory()
+{
+    driver()->printOrderHistory();
+    waitENTER();
+}
+
 void CommonInterface::DriverGateway::SeeCar()
 {
-    Driver* driver = static_cast<Driver*>(person);
-    driver->getCar().print();
+    driver()->getCar().print();
     waitENTER();
 }
 
@@ -269,8 +274,7 @@ void CommonInterface::DriverGateway::TakeOrder()
 {
     static const vector<string> consent = {"confirm", "cancel"};
     string input;
-    Driver* driver = static_cast<Driver*>(person);
-    auto orders = interface->getActiveOrder(driver->getCar().type);
+    auto orders = interface->getActiveOrder(driver()->getCar().type);
     if(orders.size() == 0){
         print("There is no orders for this car type");
         waitENTER();
@@ -299,7 +303,7 @@ void CommonInterface::DriverGateway::TakeOrder()
         break;
     }
     interface->takeActiveOrder(orders[num]);
-    person->setCurrentOrder(orders[num]);
+    driver()->setCurrentOrder(orders[num]);
 }
 
 void CommonInterface::DriverGateway::SeeOrder()
@@ -307,15 +311,15 @@ void CommonInterface::DriverGateway::SeeOrder()
     string input;
     clear();
     print("Your current order is: ");
-    person->getCurrentOrder().print();/*
+    driver()->getCurrentOrder().print();/*
     Status status = getOrderStatus(person->getCurrentOrder().number);
     print("Status is:"+static_cast<std::string>(status));*/
     print("Do you want to close the order, print \"yes\" or type ENTER to return");
     cout<<'>';cin.get();
     getline(cin,input);
     if(input == "yes"){ //close order
-        interface->closeActiveOrder(person->getCurrentOrder(),person->getPhone());
-        person->deleteCurrentOrder();
+        interface->closeActiveOrder(driver()->getCurrentOrder(),person->getPhone());
+        driver()->deleteCurrentOrder();
     }
 }
 

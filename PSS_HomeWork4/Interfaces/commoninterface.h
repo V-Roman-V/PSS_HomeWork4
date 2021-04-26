@@ -17,11 +17,10 @@ private:
     struct Gateway{
         virtual ~Gateway(){if(person)delete person;};
         virtual bool Menu()=0;
-        void SeeHistory();
-        User* person;
         CommonInterface* interface;
+        People* person;
     protected:
-        Gateway(CommonInterface* i):person(nullptr),interface(i){}
+        Gateway(CommonInterface* i):interface(i),person(nullptr){}
     };
 public:
     CommonInterface();
@@ -35,11 +34,21 @@ protected:
     bool Hello();
     bool Login();
 
+    class AdminGateway : public Gateway{
+    public:
+        bool Menu() override;
+        AdminGateway(CommonInterface* i):Gateway(i){};
+//    protected:
+//        void seeInfo
+    };
+
     class DriverGateway : public Gateway{
     public:
         bool Menu() override;
+        Driver * driver(){return static_cast<Driver*>(person);}
         DriverGateway(CommonInterface* i):Gateway(i){};
     protected:
+        void SeeHistory();
         void SeeCar();
         void TakeOrder();
         void SeeOrder();
@@ -49,6 +58,7 @@ protected:
     class PassengerGateway : public Gateway{
     public:
         bool Menu() override;
+        Passenger * pass(){return static_cast<Passenger*>(person);}
         PassengerGateway(CommonInterface* i):Gateway(i){};
     protected:
         void ChangePay();
@@ -58,6 +68,7 @@ protected:
         CarType ChooseCar();
         void CreateOrder(const Order& order);
         void SeeOrder();
+        void SeeHistory();
     };
 
     // additional function

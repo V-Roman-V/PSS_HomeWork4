@@ -6,7 +6,7 @@
 class Admin : public People
 {
 public:
-    Admin();
+    Admin(const People& p);
 };
 
 #endif // ADMIN_H
