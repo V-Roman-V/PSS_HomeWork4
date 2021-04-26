@@ -223,7 +223,6 @@ void CommonInterface::P_SeeOrder()
     auto pair = getOrderStatus(person->getCurrentOrder().number);
     if(pair.first == false){ // add to history
         print("Your order has been successfully completed");
-        addOrderHistory(person->getCurrentOrder(),person->getPhone());
         person->deleteCurrentOrder();
         waitENTER();
         return;
@@ -308,6 +307,7 @@ void CommonInterface::D_TakeOrder()
         if(answer == 1) return;
         break;
     }
+    takeActiveOrder(orders[num]);
     person->setCurrentOrder(orders[num]);
 }
 
@@ -322,8 +322,8 @@ void CommonInterface::D_SeeOrder()
     print("Do you want to close the order, print \"yes\" or type ENTER to return");
     cout<<'>';cin.get();
     getline(cin,input);
-    if(input == "yes"){ // close order
-        closeActiveOrder(person->getCurrentOrder());
+    if(input == "yes"){ //close order
+        closeActiveOrder(person->getCurrentOrder(),person->getPhone());
         person->deleteCurrentOrder();
     }
 }

@@ -64,13 +64,13 @@ protected:
     Passenger getPassenger(int p);
     void savePinAddress(const std::string& phone, const Address& address);
 
-    void addOrderHistory(const Order& order, const std::string& phone);
-    void closeActiveOrder(const Order& order);
+    void closeActiveOrder(const Order& order, const std::string& Dphone);
     void takeActiveOrder(const Order& order);
     void saveActiveOrder(const Order& order,const std::string phone);
     void deleteActiveOrder(const Order& order);
 
     std::pair<bool,Status> getOrderStatus(int number);
+    std::string getActiveOrderPhone(int number);
 
     int findDriver(const std::string& phone);
     Driver getDriver(int p);
