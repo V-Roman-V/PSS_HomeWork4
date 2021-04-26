@@ -45,7 +45,7 @@ bool CommonInterface::Login()
     string input;
     while(true){
         clear();
-        print("Hello "+static_cast<string>(type)+", to log in please enter your phone number or \"-\" to exit}");
+        print("Hello "+static_cast<string>(type)+", to log in please enter your phone number or \"-\" to exit");
         getInput(input);
         if(input == "-" or input == "exit")return false;
         if(!isNumber(input)) continue; // try Again
@@ -102,7 +102,7 @@ void CommonInterface::AdminGateway::seeInfo()
     std::string input;
     while(true){
         clear();
-        print("Enter the phone number of the person you want to find out information about or \"-\" to exit}");
+        print("Enter the phone number of the person you want to find out information about or \"-\" to exit");
         getInput(input);
         if(input == "-" or input == "exit")return;
         if(!isNumber(input)) continue; // try Again
@@ -129,7 +129,7 @@ void CommonInterface::AdminGateway::blockUser()
     std::string input;
     while(true){
         clear();
-        print("Enter the phone number of the person you want to block or \"-\" to exit}");
+        print("Enter the phone number of the person you want to block or \"-\" to exit");
         getInput(input);
         if(input == "-" or input == "exit")return;
         if(!isNumber(input)) continue; // try Again
@@ -146,7 +146,7 @@ void CommonInterface::AdminGateway::unblockUser()
     std::string input;
     while(true){
         clear();
-        print("Enter the phone number of the person you want to unblock or \"-\" to exit}");
+        print("Enter the phone number of the person you want to unblock or \"-\" to exit");
         getInput(input);
         if(input == "-" or input == "exit")return;
         if(!isNumber(input)) continue; // try Again
@@ -158,8 +158,38 @@ void CommonInterface::AdminGateway::unblockUser()
     }
 }
 
-void CommonInterface::AdminGateway::verifyCar() //TODO
+void CommonInterface::AdminGateway::verifyCar()
 {
+    std::string input;
+    std::string phone;
+    std::vector<Car> cars;
+    while(true){
+        clear();
+        print("Enter the phone number of the driver whose car you want to verify or \"-\" to exit");
+        getInput(input);
+        if(input == "-" or input == "exit")return;
+        if(!isNumber(input)) continue; // try Again
+        int row = interface->findDriver(input);
+        if(row==-1) continue; // try Again
+        auto driv = interface->getDriver(row);
+        cars = driv.getCar();
+        phone = driv.getPhone();
+        break;
+    }
+    while(true){
+        clear();
+        int i=1;
+        for(const auto& car: cars)
+            std::cout<<i++<<") "<<car<<std::endl;
+        print("Enter the number of the car you want to verify or \"-\" to exit");
+        getInput(input);
+        if(input == "-" or input == "exit")return;
+        if(!isNumber(input)) continue; // try Again
+        int num = std::stoi(input);
+        if(num<1 || num > cars.size()) continue; // try Again
+        interface->verifyCar(phone, num+1,true);
+        break;
+    }
 
 }
 

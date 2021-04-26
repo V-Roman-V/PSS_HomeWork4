@@ -13,6 +13,7 @@ struct Car
     QPointF coordinates;
     std::string color;
     std::string number;
+    bool verified;
     void setBottles(int n);
     void parkRightInFrontOfTheEntrance(); //WTF
 

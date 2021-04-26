@@ -49,7 +49,8 @@ class DataBaseInterface
         CARMODEL_D,
         CARTYPE_D,
         CARNUBER_D,
-        CARCOLOR_D
+        CARCOLOR_D,
+        CARVERIFIED_D
     };
 
     QXlsx::Document accounts;
@@ -61,6 +62,7 @@ class DataBaseInterface
 protected:
     std::pair<PersonType,int> getInfo(const std::string& phone);
     void blockPerson(PersonType, int row, bool block);
+    void verifyCar(const std::string& phone, int row, bool verified);
 
     DataBaseInterface();
 

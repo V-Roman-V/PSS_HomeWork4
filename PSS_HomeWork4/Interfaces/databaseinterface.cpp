@@ -104,6 +104,13 @@ void DataBaseInterface::blockPerson(PersonType type, int row, bool block)
     accounts.save();
 }
 
+void DataBaseInterface::verifyCar(const std::string& phone, int row, bool verified)
+{
+    accounts.selectSheet(QString::fromStdString(phone));
+    accounts.write(row,DRIVER_COLUMNS::CARVERIFIED_D, verified);
+    accounts.save();
+}
+
 int DataBaseInterface::findDriver(const std::string& phone)
 {
     accounts.selectSheet("Driver");
@@ -152,6 +159,8 @@ Driver DataBaseInterface::getDriver(int row)
         car.coordinates  = QPointF((rand()%100)/2.,(rand()%100)/2.);
         car.color = accounts.read(row,DRIVER_COLUMNS::CARCOLOR_D).toString().toStdString();
         car.number = accounts.read(row,DRIVER_COLUMNS::CARNUBER_D).toString().toStdString();
+        car.verified = accounts.read(row,DRIVER_COLUMNS::CARVERIFIED_D).toBool();
+
         car.setBottles(rand()%5+2);
         cars.push_back(car);
     }
@@ -186,7 +195,7 @@ std::vector<Order> DataBaseInterface::getActiveOrder(const std::vector<Car>& car
         order.car    = CarType(accounts.read(row,ORDERS_COLUMNS::CARTYPE).toInt());
         bool flag = false;
         for(const auto& car: cars)
-            if(order.car.number() != car.type.number()){
+            if(order.car.number() != car.type.number() && car.verified){ // машина должна быть подтверждена
                 flag = true;
                 break;
             }
