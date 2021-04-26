@@ -11,7 +11,6 @@ class Passenger : public User
 public:
     Passenger(const User&, const std::vector<Address>&);
 
-    //TODO WTF
     void askAboutCoordinates();//???
 
     Order makeOrder();

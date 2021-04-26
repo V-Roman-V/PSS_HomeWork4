@@ -32,6 +32,7 @@ class DataBaseInterface
         PRICE,
         TIME,
         DATE,
+        A_Pass,
         A_Status,
         A_LASTORDER
     };
@@ -63,13 +64,19 @@ protected:
     Passenger getPassenger(int p);
     void savePinAddress(const std::string& phone, const Address& address);
 
-    void saveActiveOrder(const Order& order);
-    Status getOrderStatus(int number);
+    void addOrderHistory(const Order& order, const std::string& phone);
+    void closeActiveOrder(const Order& order);
+    void takeActiveOrder(const Order& order);
+    void saveActiveOrder(const Order& order,const std::string phone);
+    void deleteActiveOrder(const Order& order);
+
+    std::pair<bool,Status> getOrderStatus(int number);
 
     int findDriver(const std::string& phone);
     Driver getDriver(int p);
 
     std::vector<Order> getActiveOrder(CarType type);
+    std::pair<bool,Order> getActiveOrder(std::string phone);
 };
 
 #endif // DATABASEINTERFACE_H

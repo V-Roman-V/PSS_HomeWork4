@@ -29,8 +29,9 @@ protected:
     void D_SeeCar();
     void D_TakeOrder();
     void D_SeeOrder();
+    void D_setStatus();
 
-    // TODO put together
+    // todo(not neccesary) put together
     bool PassMenu();
     void P_ChangePay();
     void P_AddPinAddr();

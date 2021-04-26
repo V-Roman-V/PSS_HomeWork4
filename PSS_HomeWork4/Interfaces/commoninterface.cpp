@@ -17,7 +17,6 @@ CommonInterface::~CommonInterface()
 
 bool CommonInterface::start()
 {
-//    waitENTER();
     return Hello() &&
            Login() &&
            Menu();
@@ -157,7 +156,7 @@ void CommonInterface::P_MakeOrder()
         P_CreateOrder(order);
         order.number = getNextOrderNumber();
         person->setCurrentOrder(order);
-        saveActiveOrder(order);
+        saveActiveOrder(order,person->getPhone());
     }  catch (int exit) {}
 }
 
@@ -221,14 +220,24 @@ void CommonInterface::P_SeeOrder()
     clear();
     print("Your current order is: ");
     person->getCurrentOrder().print();
-    Status status = getOrderStatus(person->getCurrentOrder().number);
+    auto pair = getOrderStatus(person->getCurrentOrder().number);
+    if(pair.first == false){ // add to history
+        print("Your order has been successfully completed");
+        addOrderHistory(person->getCurrentOrder(),person->getPhone());
+        person->deleteCurrentOrder();
+        waitENTER();
+        return;
+    }
+    Status status = pair.second;
     print("Status is:"+static_cast<std::string>(status));
     if(status.number() == Status(0).number()){
         print("If you want cancel it, print \"yes\" or type ENTER to return");
         cout<<'>';cin.get();
         getline(cin,input);
-        if(input == "yes") // TODO delete from database
-                person->deleteCurrentOrder();
+        if(input == "yes"){
+            deleteActiveOrder(person->getCurrentOrder());
+            person->deleteCurrentOrder();
+        }
     } else
         waitENTER();
 }
@@ -236,9 +245,8 @@ void CommonInterface::P_SeeOrder()
 
 bool CommonInterface::DrivMenu()
 {
-    //TODO status
-    static const vector<string> Actions = {"See_history","See_car","take_order","exit"};//...
-    static const vector<string> Actions_order = {"See_history","See_car","See_current_order","exit"};//...
+    static const vector<string> Actions = {"See_history","Set_status","See_car","take_order","exit"};//...
+    static const vector<string> Actions_order = {"See_history","Set_status","See_car","See_current_order","exit"};//...
 
     string input;
     while(true){
@@ -253,8 +261,9 @@ bool CommonInterface::DrivMenu()
         if(num == (Act.size()-1)) return false;
         switch(num){
             case 0: SeeHistory();break;
-            case 1: D_SeeCar();break;
-            case 2: person->hasActiveOrder()?D_SeeOrder():D_TakeOrder();break;
+            case 1: D_setStatus();break;
+            case 2: D_SeeCar();break;
+            case 3: person->hasActiveOrder()?D_SeeOrder():D_TakeOrder();break;
         }
     }
 }
@@ -268,6 +277,8 @@ void CommonInterface::D_SeeCar()
 
 void CommonInterface::D_TakeOrder()
 {
+    static const vector<string> consent = {"confirm", "cancel"};
+    string input;
     Driver* driver = static_cast<Driver*>(person);
     auto orders = getActiveOrder(driver->getCar().type);
     if(orders.size() == 0){
@@ -281,12 +292,58 @@ void CommonInterface::D_TakeOrder()
     for(const auto& order:orders){
         cout<<i++<<")";order.print();
     }
-    waitENTER();
+    print("Enter order number or \"(-)back\"");
+    getInput(input);
+    if(input == "-" or input == "back")return;
+    if(!isNumber(input)) return;
+    int num = std::stoi(input) - 1;
+    if( num >= orders.size()) return;
+    while(true){
+        print("Your order is: ");
+        orders[num].print();
+        print("Take order?"+getListOptions(consent));
+        getInput(input);
+        int answer = calculateInput(input,consent);
+        if(answer == -1)continue;
+        if(answer == 1) return;
+        break;
+    }
+    person->setCurrentOrder(orders[num]);
 }
 
 void CommonInterface::D_SeeOrder()
 {
+    string input;
+    clear();
+    print("Your current order is: ");
+    person->getCurrentOrder().print();/*
+    Status status = getOrderStatus(person->getCurrentOrder().number);
+    print("Status is:"+static_cast<std::string>(status));*/
+    print("Do you want to close the order, print \"yes\" or type ENTER to return");
+    cout<<'>';cin.get();
+    getline(cin,input);
+    if(input == "yes"){ // close order
+        closeActiveOrder(person->getCurrentOrder());
+        person->deleteCurrentOrder();
+    }
+}
 
+void CommonInterface::D_setStatus()
+{
+    static const vector<string> statuses = {Status(0),Status(1),"back"};
+    string input;
+    Driver* driv = static_cast<Driver*>(person);
+    while(true){
+        clear();
+        print("You status is: "+static_cast<string>(driv->getStatus()));
+        print("Select the new status: "+getListOptions(statuses));
+        getInput(input);
+        int num = calculateInput(input, statuses);
+        if(num ==-1) continue; // try Again
+        if(num == statuses.size()-1) return;
+        driv->updateStatus(Status(num));
+        return;
+    }
 }
 
 //------------------------------------------------------------------------------------------------------

@@ -10,9 +10,10 @@ std::vector<Order> Driver::getOrderHistory() const {
 
 std::string Driver::getFullInfo() const
 {
-    // TODO implement
     std::stringstream info;
     info<<User::getFullInfo();
+    info<<"\tStatus:"<<static_cast<std::string>(status)<<std::endl;
+
     return info.str();
 }
 
@@ -21,14 +22,13 @@ void Driver::updateStatus(Status s)
     status = s;
 }
 
-Order Driver::takeOrder()
-{
-    //TODO
-
-}
-
 Car Driver::getCar() const
 {
     return car;
+}
+
+Status Driver::getStatus() const
+{
+    return status;
 }
 

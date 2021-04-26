@@ -81,7 +81,6 @@ int DataBaseInterface::findDriver(const std::string& phone)
 
 Driver DataBaseInterface::getDriver(int row)
 {
-    // TODO get Drivers
     accounts.selectSheet("Driver");
     People person = getPerson(row);
     accounts.selectSheet(QString::fromStdString(person.getPhone()));
@@ -132,9 +131,7 @@ std::vector<Order> DataBaseInterface::getActiveOrder(CarType type)
         if(cell == NULL)break;
         Order order;
         order.car    = CarType(accounts.read(row,ORDERS_COLUMNS::CARTYPE).toInt());
-        std::cout<<order.car<<" "<<type<<std::endl;
         if(order.car.number() != type.number()) continue;
-        std::cout<<order.car<<" "<<type<<std::endl;
 
         order.number = accounts.read(row,ORDERS_COLUMNS::ORDERNUMBER).toInt();
         order.from   = accounts.read(row,ORDERS_COLUMNS::ADDRESSFROM).toString().toStdString();
@@ -145,6 +142,26 @@ std::vector<Order> DataBaseInterface::getActiveOrder(CarType type)
         orders.push_back(order);
     }
     return orders;
+}
+
+std::pair<bool,Order> DataBaseInterface::getActiveOrder(std::string phone)
+{
+    Order order;
+    accounts.selectSheet("Active orders");
+    for(int row = 2;;row++){
+        auto *cell = accounts.cellAt(row, ORDERS_COLUMNS::A_Pass);
+        if(cell == NULL)break;
+        if(cell->value().toString().toStdString() != phone) continue;
+        order.car    = CarType(accounts.read(row,ORDERS_COLUMNS::CARTYPE).toInt());
+        order.number = accounts.read(row,ORDERS_COLUMNS::ORDERNUMBER).toInt();
+        order.from   = accounts.read(row,ORDERS_COLUMNS::ADDRESSFROM).toString().toStdString();
+        order.to     = accounts.read(row,ORDERS_COLUMNS::ADDRESSTO).toString().toStdString();
+        order.price  = accounts.read(row,ORDERS_COLUMNS::PRICE).toDouble();
+        order.time   = accounts.read(row,ORDERS_COLUMNS::TIME).toTime();
+        order.date   = accounts.read(row,ORDERS_COLUMNS::DATE).toDate();
+        return std::make_pair(true,order);
+    }
+    return std::make_pair(false,order);
 }
 
 int DataBaseInterface::findPassenger(const std::string& phone)
@@ -192,9 +209,13 @@ Passenger DataBaseInterface::getPassenger(int row)
     }
 
     accounts.selectSheet("Passenger");
-    return Passenger(User(person,orders,Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt())),
-                     addresses
-                     );
+    Passenger pass(User(person,orders,Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt())),
+                   addresses
+                   );
+    auto pair = getActiveOrder(pass.getPhone());
+    if(pair.first)
+        pass.setCurrentOrder(pair.second);
+    return pass;
 }
 
 void DataBaseInterface::savePinAddress(const std::string &phone, const Address &address)
@@ -211,9 +232,22 @@ void DataBaseInterface::savePinAddress(const std::string &phone, const Address &
     accounts.save();
 }
 
-void DataBaseInterface::saveActiveOrder(const Order &order)
+void DataBaseInterface::addOrderHistory(const Order &order, const std::string &phone)
 {
-    accounts.selectSheet("Active orders");
+    accounts.selectSheet(QString::fromStdString(phone));
+    for(int row=2;;row++){;
+        auto *cell = accounts.cellAt(row, PASSENGER_COLUMNS::ORDERS);
+        if(cell != NULL)continue;
+        accounts.write(row,PASSENGER_COLUMNS::ORDERS, order.number);
+        break;
+    }
+    accounts.save();
+}
+
+void DataBaseInterface::closeActiveOrder(const Order &order)
+{
+    deleteActiveOrder(order);
+    accounts.selectSheet("Orders");
     for(int row=2;;row++){;
         auto *cell = accounts.cellAt(row, ORDERS_COLUMNS::ORDERNUMBER);
         if(cell != NULL)continue;
@@ -224,22 +258,106 @@ void DataBaseInterface::saveActiveOrder(const Order &order)
         accounts.write(row,ORDERS_COLUMNS::PRICE      ,order.price);
         accounts.write(row,ORDERS_COLUMNS::TIME       ,order.time);
         accounts.write(row,ORDERS_COLUMNS::DATE       ,static_cast<QDate>(order.date));
+        break;
+    }
+    accounts.save();
+}
+
+void DataBaseInterface::takeActiveOrder(const Order &order)
+{
+    accounts.selectSheet("Active orders");
+    for(int row=2;;row++){;
+        auto *cell = accounts.cellAt(row, ORDERS_COLUMNS::ORDERNUMBER);
+        if(cell != NULL)continue;
+        if(cell->value().toInt() == order.number){
+            accounts.write(row,ORDERS_COLUMNS::A_Status, Status(1).number());
+            break;
+        }
+    }
+    accounts.save();
+}
+
+void DataBaseInterface::saveActiveOrder(const Order &order,const std::string phone)
+{
+    accounts.selectSheet("Active orders");
+    for(int row=2;;row++){;
+        auto *cell = accounts.cellAt(row, ORDERS_COLUMNS::ORDERNUMBER);
+        if(cell != NULL && cell->value() != "")continue;
+        accounts.write(row,ORDERS_COLUMNS::ORDERNUMBER,order.number);
+        accounts.write(row,ORDERS_COLUMNS::ADDRESSFROM,QString::fromStdString(order.from));
+        accounts.write(row,ORDERS_COLUMNS::ADDRESSTO  ,QString::fromStdString(order.to));
+        accounts.write(row,ORDERS_COLUMNS::CARTYPE    ,order.car.number());
+        accounts.write(row,ORDERS_COLUMNS::PRICE      ,order.price);
+        accounts.write(row,ORDERS_COLUMNS::TIME       ,order.time);
+        accounts.write(row,ORDERS_COLUMNS::DATE       ,static_cast<QDate>(order.date));
+        accounts.write(row,ORDERS_COLUMNS::A_Pass     ,QString::fromStdString(phone));
         accounts.write(row,ORDERS_COLUMNS::A_Status   ,Status(0).number());
         break;
     }
     accounts.save();
 }
 
-Status DataBaseInterface::getOrderStatus(int number)
+void DataBaseInterface::deleteActiveOrder(const Order &order)
+{
+    accounts.selectSheet("Active orders");
+    accounts.cellAt(2,1)->value().clear();
+    accounts.cellAt(2,2)->value().clear();
+
+    int row=2;
+    bool del = false;
+    for(;;row++){
+        auto *cell = accounts.cellAt(row, ORDERS_COLUMNS::ORDERNUMBER);
+        if(cell == NULL)break;
+        if(cell->value().toInt() != order.number) continue;
+        accounts.write(row,ORDERS_COLUMNS::ORDERNUMBER,"");
+        accounts.write(row,ORDERS_COLUMNS::ADDRESSFROM,"");
+        accounts.write(row,ORDERS_COLUMNS::ADDRESSTO,"");
+        accounts.write(row,ORDERS_COLUMNS::CARTYPE,"");
+        accounts.write(row,ORDERS_COLUMNS::DATE,"");
+        accounts.write(row,ORDERS_COLUMNS::PRICE,"");
+        accounts.write(row,ORDERS_COLUMNS::TIME,"");
+        accounts.write(row,ORDERS_COLUMNS::A_Pass,"");
+        accounts.write(row,ORDERS_COLUMNS::A_Status,"");
+        del = true;
+        break;
+    }
+    row++;
+    for(;del;row++){
+        auto *cell = accounts.cellAt(row, ORDERS_COLUMNS::ORDERNUMBER);
+        if(cell == NULL)break;
+        accounts.write(row-1,ORDERS_COLUMNS::ORDERNUMBER,accounts.read(row,ORDERS_COLUMNS::ORDERNUMBER));
+        accounts.write(row-1,ORDERS_COLUMNS::ADDRESSFROM,accounts.read(row,ORDERS_COLUMNS::ADDRESSFROM));
+        accounts.write(row-1,ORDERS_COLUMNS::ADDRESSTO,accounts.read(row,ORDERS_COLUMNS::ADDRESSTO));
+        accounts.write(row-1,ORDERS_COLUMNS::CARTYPE,accounts.read(row,ORDERS_COLUMNS::CARTYPE));
+        accounts.write(row-1,ORDERS_COLUMNS::DATE,accounts.read(row,ORDERS_COLUMNS::DATE));
+        accounts.write(row-1,ORDERS_COLUMNS::PRICE,accounts.read(row,ORDERS_COLUMNS::PRICE));
+        accounts.write(row-1,ORDERS_COLUMNS::TIME,accounts.read(row,ORDERS_COLUMNS::TIME));
+        accounts.write(row-1,ORDERS_COLUMNS::A_Pass,accounts.read(row,ORDERS_COLUMNS::A_Pass));
+        accounts.write(row-1,ORDERS_COLUMNS::A_Status,accounts.read(row,ORDERS_COLUMNS::A_Status));
+
+        accounts.write(row,ORDERS_COLUMNS::ORDERNUMBER,"");
+        accounts.write(row,ORDERS_COLUMNS::ADDRESSFROM,"");
+        accounts.write(row,ORDERS_COLUMNS::ADDRESSTO,"");
+        accounts.write(row,ORDERS_COLUMNS::CARTYPE,"");
+        accounts.write(row,ORDERS_COLUMNS::DATE,"");
+        accounts.write(row,ORDERS_COLUMNS::PRICE,"");
+        accounts.write(row,ORDERS_COLUMNS::TIME,"");
+        accounts.write(row,ORDERS_COLUMNS::A_Pass,"");
+        accounts.write(row,ORDERS_COLUMNS::A_Status,"");
+    }
+    accounts.save();
+}
+
+std::pair<bool,Status> DataBaseInterface::getOrderStatus(int number)
 {
     accounts.selectSheet("Active orders");
     for(int row=2;;row++){;
         auto *cell = accounts.cellAt(row, ORDERS_COLUMNS::ORDERNUMBER);
         if(cell == NULL)break;
         if(cell->value().toInt() == number)
-            return Status(accounts.read(row, ORDERS_COLUMNS::A_Status).toInt());
+            return std::make_pair(true,Status(accounts.read(row, ORDERS_COLUMNS::A_Status).toInt()));
     }
-    return Status(0);
+    return std::make_pair(false,Status(0));
 }
 
 DataBaseInterface::DataBaseInterface()

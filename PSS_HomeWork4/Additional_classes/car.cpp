@@ -8,7 +8,7 @@ void Car::setBottles(int n)
 
 void Car::parkRightInFrontOfTheEntrance()
 {
-    //TODO
+    std::cout<<"you are parked in front of the Entrance";
 }
 
 std::ostream& operator<<(std::ostream &out, const Car &C){

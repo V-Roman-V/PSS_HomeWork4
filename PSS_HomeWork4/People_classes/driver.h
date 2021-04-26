@@ -22,10 +22,11 @@ public:
 
     Car getCar() const;
 
+    Status getStatus() const;
+
 private:
     std::vector<Order> order_history;
     Car car;
-    std::vector<Order> pinned_addresses;
     Status status;
 };
 #endif // DRIVER_H
