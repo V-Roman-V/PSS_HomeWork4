@@ -90,6 +90,20 @@ std::pair<PersonType, int> DataBaseInterface::getInfo(const std::string &phone)
     return std::make_pair(PersonType(t), p);
 }
 
+void DataBaseInterface::blockPerson(PersonType type, int row, bool block)
+{
+    if(type == PersonType(2))return;
+    if(type == PersonType(0)){
+        accounts.selectSheet("Passenger");
+        accounts.write(row,ACCOUNTS_COLUMNS::BLOCKED, block);
+    }
+    if(type == PersonType(1)){
+        accounts.selectSheet("Driver");
+        accounts.write(row,ACCOUNTS_COLUMNS::BLOCKED, block);
+    }
+    accounts.save();
+}
+
 int DataBaseInterface::findDriver(const std::string& phone)
 {
     accounts.selectSheet("Driver");
@@ -100,6 +114,10 @@ Driver DataBaseInterface::getDriver(int row)
 {
     accounts.selectSheet("Driver");
     People person = getPerson(row);
+
+    accounts.selectSheet("Driver");
+    bool blocked = accounts.read(row, ACCOUNTS_COLUMNS::BLOCKED).toInt();
+
     accounts.selectSheet(QString::fromStdString(person.getPhone()));
     std::vector<int> ordersNum;
     for(int row = 2;;row++){
@@ -139,7 +157,7 @@ Driver DataBaseInterface::getDriver(int row)
     }
 
     accounts.selectSheet("Driver");
-    return Driver(User(person,orders,Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt())),
+    return Driver(User(person,orders,Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt()), blocked),
                   cars
                   );
 }
@@ -215,6 +233,10 @@ Passenger DataBaseInterface::getPassenger(int row)
 {
     accounts.selectSheet("Passenger");
     People person = getPerson(row);
+
+    accounts.selectSheet("Passenger");
+    bool blocked = accounts.read(row, ACCOUNTS_COLUMNS::BLOCKED).toInt();
+
     accounts.selectSheet(QString::fromStdString(person.getPhone()));
     std::vector<int> ordersNum;
     std::vector<Address> addresses;
@@ -255,7 +277,7 @@ Passenger DataBaseInterface::getPassenger(int row)
     }
 
     accounts.selectSheet("Passenger");
-    Passenger pass(User(person,orders,Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt())),
+    Passenger pass(User(person,orders,Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt()),blocked),
                    addresses
                    );
     auto pair = getActiveOrder(pass.getPhone());

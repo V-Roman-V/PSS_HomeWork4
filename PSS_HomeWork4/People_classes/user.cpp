@@ -10,8 +10,13 @@ Order User::getCurrentOrder() const
     return current_order;
 }
 
-User::User(const People &p, const std::vector<Order>& orders, const Rating&rating)
-    :People(p), order_history(orders), rating(rating)
+bool User::isBlocked() const
+{
+    return blocked;
+}
+
+User::User(const People &p, const std::vector<Order>& orders, const Rating&rating, bool block)
+    :People(p), order_history(orders), rating(rating), blocked(block)
 {std::cout<<"oku";}
 
 std::string User::getFullInfo() const
@@ -19,6 +24,7 @@ std::string User::getFullInfo() const
     std::stringstream info;
     info<<People::getFullInfo();
     info<<"\tRating: "<<rating<<std::endl;
+    info<<(blocked?"\tBlocked by administrator\n":"");
     return info.str();
 }
 

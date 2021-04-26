@@ -12,8 +12,9 @@ protected:
     Order current_order;
     bool _hasActiveOrder=false;
     Rating rating;
+    bool blocked;
 public:
-    User(const People& p, const std::vector<Order>&, const Rating&);
+    User(const People& p, const std::vector<Order>&, const Rating&, bool block);
 
     std::string getFullInfo()const override;
 
@@ -24,6 +25,7 @@ public:
     void closeCurrentOrder();
     bool hasActiveOrder() const;
     Order getCurrentOrder() const;
+    bool isBlocked() const;
 };
 
 #endif // USER_H

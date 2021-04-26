@@ -43,6 +43,7 @@ protected:
     protected:
         void seeInfo();
         void blockUser();
+        void unblockUser();
         void verifyCar();
     };
 

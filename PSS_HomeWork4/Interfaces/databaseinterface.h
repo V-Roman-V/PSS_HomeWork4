@@ -24,7 +24,8 @@ class DataBaseInterface
         PASSSERIES,
         PASSNUMBER,
         PHONE,
-        RATING
+        RATING,
+        BLOCKED
     };
     enum ORDERS_COLUMNS{
         ORDERNUMBER = 1,
@@ -59,6 +60,7 @@ class DataBaseInterface
     People getPerson(int p) const;
 protected:
     std::pair<PersonType,int> getInfo(const std::string& phone);
+    void blockPerson(PersonType, int row, bool block);
 
     DataBaseInterface();
 

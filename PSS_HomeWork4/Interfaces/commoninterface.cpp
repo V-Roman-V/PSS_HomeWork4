@@ -77,7 +77,7 @@ bool CommonInterface::Login()
 
 bool CommonInterface::AdminGateway::Menu()
 {
-     static const vector<string> Actions = {"See_info","Block_user","Verify_car","exit"};
+     static const vector<string> Actions = {"See_info","Block_user","Unblock_user","Verify_car","exit"};
      string input;
      while(true){
          clear();
@@ -91,7 +91,8 @@ bool CommonInterface::AdminGateway::Menu()
          switch(num){
              case 0: seeInfo();break;
              case 1: blockUser();break;
-             case 2: verifyCar();break;
+             case 2: unblockUser();break;
+             case 3: verifyCar();break;
          }
      }
 }
@@ -123,9 +124,38 @@ void CommonInterface::AdminGateway::seeInfo()
     waitENTER();
 }
 
-void CommonInterface::AdminGateway::blockUser() //TODO
+void CommonInterface::AdminGateway::blockUser()
 {
+    std::string input;
+    while(true){
+        clear();
+        print("Enter the phone number of the person you want to block or \"-\" to exit}");
+        getInput(input);
+        if(input == "-" or input == "exit")return;
+        if(!isNumber(input)) continue; // try Again
+        auto pair = interface->getInfo(input);
+        int num = pair.second;
+        if(num==-1) continue; // try Again
+        interface->blockPerson(pair.first,pair.second,true);
+        break;
+    }
+}
 
+void CommonInterface::AdminGateway::unblockUser()
+{
+    std::string input;
+    while(true){
+        clear();
+        print("Enter the phone number of the person you want to unblock or \"-\" to exit}");
+        getInput(input);
+        if(input == "-" or input == "exit")return;
+        if(!isNumber(input)) continue; // try Again
+        auto pair = interface->getInfo(input);
+        int num = pair.second;
+        if(num==-1) continue; // try Again
+        interface->blockPerson(pair.first,pair.second,false);
+        break;
+    }
 }
 
 void CommonInterface::AdminGateway::verifyCar() //TODO
@@ -198,6 +228,11 @@ void CommonInterface::PassengerGateway::AddPinAddr()
 
 void CommonInterface::PassengerGateway::MakeOrder()
 {
+    if(pass()->isBlocked()){
+        print("You are blocked by the administrator, so you can't create orders");
+        waitENTER();
+        return;
+    }
     string input;
     Order order;
     try {
@@ -345,6 +380,11 @@ void CommonInterface::DriverGateway::SeeCar()
 
 void CommonInterface::DriverGateway::TakeOrder()
 {
+    if(driver()->isBlocked()){
+        print("You are blocked by the administrator, so you can't take orders");
+        waitENTER();
+        return;
+    }
     static const vector<string> consent = {"confirm", "cancel"};
     string input;
     auto orders = interface->getActiveOrder(driver()->getCar());
