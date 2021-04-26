@@ -3,23 +3,22 @@
 
 using namespace std;
 
-CommonInterface::CommonInterface():person(nullptr){srand(time(0));}
+CommonInterface::CommonInterface():gateway(nullptr){srand(time(0));}
 
 CommonInterface::~CommonInterface()
 {
-    if(person)
-        delete person;
+    if(gateway)
+        delete gateway;
 }
 
 //Passenger: 89959280771
 //Driver   : 333221234
 
-
 bool CommonInterface::start()
 {
     return Hello() &&
            Login() &&
-           Menu();
+           gateway->Menu();
 }
 
 bool CommonInterface::Hello()
@@ -52,30 +51,22 @@ bool CommonInterface::Login()
         if(type == PersonType(0)){
             int num = findPassenger(input);
             if(num==-1) continue; // try Again
-            person = new Passenger(getPassenger(num));
+            gateway = new PassengerGateway(this);
+            gateway->person = new Passenger(getPassenger(num));
             return true;
         }
         if(type == PersonType(1)){
             int num = findDriver(input);
             if(num==-1) continue; // try Again
-            person = new Driver(getDriver(num));
+            gateway = new DriverGateway(this);
+            gateway->person = new Driver(getDriver(num));
             return true;
         }
         assert(!"Incorrect person type");
     }
 }
 
-bool CommonInterface::Menu()
-{
-    assert(person != nullptr);
-    if(type == PersonType(0))
-        return PassMenu();
-    if(type == PersonType(1))
-        return DrivMenu();
-    return false;
-}
-
-bool CommonInterface::PassMenu()
+bool CommonInterface::PassengerGateway::Menu()
 {
     static const vector<string> Actions = {"See_history","Change_payment_method","Add_pinned_address","Make_order","exit"};//...
     static const vector<string> Actions_order = {"See_history","Change_payment_method","Add_pinned_address","See_current_order","exit"};//...
@@ -93,20 +84,20 @@ bool CommonInterface::PassMenu()
         if(num == (Act.size()-1)) return false;
         switch(num){
             case 0: SeeHistory();break;
-            case 1: P_ChangePay();break;
-            case 2: P_AddPinAddr();break;
-            case 3: person->hasActiveOrder()?P_SeeOrder():P_MakeOrder();break;
+            case 1: ChangePay();break;
+            case 2: AddPinAddr();break;
+            case 3: person->hasActiveOrder()?SeeOrder():MakeOrder();break;
         }
     }
 }
 
-void CommonInterface::SeeHistory()
+void CommonInterface::Gateway::SeeHistory()
 {
     person->printOrderHistory();
     waitENTER();
 }
 
-void CommonInterface::P_ChangePay()
+void CommonInterface::PassengerGateway::ChangePay()
 {
     static const vector<string> Type = {PayType(0),PayType(1),"back"};
     string input;
@@ -124,7 +115,7 @@ void CommonInterface::P_ChangePay()
     }
 }
 
-void CommonInterface::P_AddPinAddr()
+void CommonInterface::PassengerGateway::AddPinAddr()
 {
     string input;
     print("Enter address to pin or go \"(-)back\"");
@@ -138,29 +129,29 @@ void CommonInterface::P_AddPinAddr()
     if (input.size()>0)
         address.setName(input);
     static_cast<Passenger*>(person)->addPinAddress(address);
-    savePinAddress(person->getPhone(),address);
+    interface->savePinAddress(person->getPhone(),address);
 }
 
-void CommonInterface::P_MakeOrder()
+void CommonInterface::PassengerGateway::MakeOrder()
 {
     string input;
     Order order;
     try {
-        order.from  = P_ChooseAddr(true);
-        order.to    = P_ChooseAddr(false);
-        order.car   = P_ChooseCar();
+        order.from  = ChooseAddr(true);
+        order.to    = ChooseAddr(false);
+        order.car   = ChooseCar();
         order.time  = QTime(rand()%3,rand()%60);
         order.price = order.time.hour()*60 + order.time.minute() + order.car.number()*100; // time + car*100
         order.date  = Date::getNowDate();
         order.number = -1;
-        P_CreateOrder(order);
-        order.number = getNextOrderNumber();
+        CreateOrder(order);
+        order.number = interface->getNextOrderNumber();
         person->setCurrentOrder(order);
-        saveActiveOrder(order,person->getPhone());
+        interface->saveActiveOrder(order,person->getPhone());
     }  catch (int exit) {}
 }
 
-Address CommonInterface::P_ChooseAddr(bool from)
+Address CommonInterface::PassengerGateway::ChooseAddr(bool from)
 {
     string input;
     Passenger* pass = static_cast<Passenger*>(person);
@@ -182,7 +173,7 @@ Address CommonInterface::P_ChooseAddr(bool from)
     throw -1;
 }
 
-CarType CommonInterface::P_ChooseCar()
+CarType CommonInterface::PassengerGateway::ChooseCar()
 {
     string input;
     const vector<string> types = CarType::getList();
@@ -197,7 +188,7 @@ CarType CommonInterface::P_ChooseCar()
     throw -1;
 }
 
-void CommonInterface::P_CreateOrder(const Order& order)
+void CommonInterface::PassengerGateway::CreateOrder(const Order& order)
 {
     static const vector<string> consent = {"confirm", "cancel"};
     string input;
@@ -214,13 +205,13 @@ void CommonInterface::P_CreateOrder(const Order& order)
     }
 }
 
-void CommonInterface::P_SeeOrder()
+void CommonInterface::PassengerGateway::SeeOrder()
 {
     string input;
     clear();
     print("Your current order is: ");
     person->getCurrentOrder().print();
-    auto pair = getOrderStatus(person->getCurrentOrder().number);
+    auto pair = interface->getOrderStatus(person->getCurrentOrder().number);
     if(pair.first == false){ // add to history
         print("Your order has been successfully completed");
         person->deleteCurrentOrder();
@@ -234,7 +225,7 @@ void CommonInterface::P_SeeOrder()
         cout<<'>';cin.get();
         getline(cin,input);
         if(input == "yes"){
-            deleteActiveOrder(person->getCurrentOrder());
+            interface->deleteActiveOrder(person->getCurrentOrder());
             person->deleteCurrentOrder();
         }
     } else
@@ -242,7 +233,7 @@ void CommonInterface::P_SeeOrder()
 }
 
 
-bool CommonInterface::DrivMenu()
+bool CommonInterface::DriverGateway::Menu()
 {
     static const vector<string> Actions = {"See_history","Set_status","See_car","take_order","exit"};//...
     static const vector<string> Actions_order = {"See_history","Set_status","See_car","See_current_order","exit"};//...
@@ -260,26 +251,26 @@ bool CommonInterface::DrivMenu()
         if(num == (Act.size()-1)) return false;
         switch(num){
             case 0: SeeHistory();break;
-            case 1: D_setStatus();break;
-            case 2: D_SeeCar();break;
-            case 3: person->hasActiveOrder()?D_SeeOrder():D_TakeOrder();break;
+            case 1: setStatus();break;
+            case 2: SeeCar();break;
+            case 3: person->hasActiveOrder()?SeeOrder():TakeOrder();break;
         }
     }
 }
 
-void CommonInterface::D_SeeCar()
+void CommonInterface::DriverGateway::SeeCar()
 {
     Driver* driver = static_cast<Driver*>(person);
     driver->getCar().print();
     waitENTER();
 }
 
-void CommonInterface::D_TakeOrder()
+void CommonInterface::DriverGateway::TakeOrder()
 {
     static const vector<string> consent = {"confirm", "cancel"};
     string input;
     Driver* driver = static_cast<Driver*>(person);
-    auto orders = getActiveOrder(driver->getCar().type);
+    auto orders = interface->getActiveOrder(driver->getCar().type);
     if(orders.size() == 0){
         print("There is no orders for this car type");
         waitENTER();
@@ -307,11 +298,11 @@ void CommonInterface::D_TakeOrder()
         if(answer == 1) return;
         break;
     }
-    takeActiveOrder(orders[num]);
+    interface->takeActiveOrder(orders[num]);
     person->setCurrentOrder(orders[num]);
 }
 
-void CommonInterface::D_SeeOrder()
+void CommonInterface::DriverGateway::SeeOrder()
 {
     string input;
     clear();
@@ -323,12 +314,12 @@ void CommonInterface::D_SeeOrder()
     cout<<'>';cin.get();
     getline(cin,input);
     if(input == "yes"){ //close order
-        closeActiveOrder(person->getCurrentOrder(),person->getPhone());
+        interface->closeActiveOrder(person->getCurrentOrder(),person->getPhone());
         person->deleteCurrentOrder();
     }
 }
 
-void CommonInterface::D_setStatus()
+void CommonInterface::DriverGateway::setStatus()
 {
     static const vector<string> statuses = {Status(0),Status(1),"back"};
     string input;
