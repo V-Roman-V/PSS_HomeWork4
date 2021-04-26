@@ -10,7 +10,7 @@
 class Driver : public User
 {
 public:
-    Driver(const User& u, const Car& car);
+    Driver(const User& u, const std::vector<Car>& car);
 
     std::vector<Order> getOrderHistory() const;
 
@@ -20,13 +20,13 @@ public:
 
     Order takeOrder();
 
-    Car getCar() const;
+    const std::vector<Car>& getCar() const;
 
     Status getStatus() const;
 
 private:
     std::vector<Order> order_history;
-    Car car;
+    std::vector<Car> car;
     Status status;
 };
 #endif // DRIVER_H

@@ -109,20 +109,27 @@ Driver DataBaseInterface::getDriver(int row)
     }
 
     accounts.selectSheet(QString::fromStdString(person.getPhone()));
-    Car car;
-    car.model = accounts.read(2,DRIVER_COLUMNS::CARMODEL_D).toString().toStdString();
-    car.type  = CarType(accounts.read(2,DRIVER_COLUMNS::CARTYPE_D).toInt());
-    car.coordinates  = QPointF(0,0);
-    car.color = accounts.read(2,DRIVER_COLUMNS::CARCOLOR_D).toString().toStdString();
-    car.number = accounts.read(2,DRIVER_COLUMNS::CARNUBER_D).toString().toStdString();
-    car.setBottles(4);
+    std::vector<Car> cars;
+    for(int row = 2;;row++){
+        auto cell = accounts.cellAt(row, DRIVER_COLUMNS::CARMODEL_D);
+        if(cell == NULL)break;
+        Car car;
+        car.model = accounts.read(row,DRIVER_COLUMNS::CARMODEL_D).toString().toStdString();
+        car.type  = CarType(accounts.read(row,DRIVER_COLUMNS::CARTYPE_D).toInt());
+        car.coordinates  = QPointF((rand()%100)/2.,(rand()%100)/2.);
+        car.color = accounts.read(row,DRIVER_COLUMNS::CARCOLOR_D).toString().toStdString();
+        car.number = accounts.read(row,DRIVER_COLUMNS::CARNUBER_D).toString().toStdString();
+        car.setBottles(rand()%5+2);
+        cars.push_back(car);
+    }
+
     accounts.selectSheet("Driver");
     return Driver(User(person,orders,Rating(accounts.cellAt(row, ACCOUNTS_COLUMNS::RATING)->readValue().toInt())),
-                  car
+                  cars
                   );
 }
 
-std::vector<Order> DataBaseInterface::getActiveOrder(CarType type)
+std::vector<Order> DataBaseInterface::getActiveOrder(const std::vector<Car>& cars)
 {
     std::vector<Order> orders;
     accounts.selectSheet("Active_orders");
@@ -131,7 +138,13 @@ std::vector<Order> DataBaseInterface::getActiveOrder(CarType type)
         if(cell == NULL)break;
         Order order;
         order.car    = CarType(accounts.read(row,ORDERS_COLUMNS::CARTYPE).toInt());
-        if(order.car.number() != type.number()) continue;
+        bool flag = false;
+        for(const auto& car: cars)
+            if(order.car.number() != car.type.number()){
+                flag = true;
+                break;
+            }
+        if(!flag)continue;
 
         order.number = accounts.read(row,ORDERS_COLUMNS::ORDERNUMBER).toInt();
         order.from   = accounts.read(row,ORDERS_COLUMNS::ADDRESSFROM).toString().toStdString();
@@ -144,7 +157,7 @@ std::vector<Order> DataBaseInterface::getActiveOrder(CarType type)
     return orders;
 }
 
-std::pair<bool,Order> DataBaseInterface::getActiveOrder(std::string phone)
+std::pair<bool,Order> DataBaseInterface::getActiveOrder(const std::string& phone)
 {
     Order order;
     accounts.selectSheet("Active_orders");

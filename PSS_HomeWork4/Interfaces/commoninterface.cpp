@@ -307,7 +307,9 @@ void CommonInterface::DriverGateway::SeeHistory()
 
 void CommonInterface::DriverGateway::SeeCar()
 {
-    driver()->getCar().print();
+    int i=1;
+    for(const auto& car: driver()->getCar())
+        std::cout<<i++<<") "<<car<<std::endl;
     waitENTER();
 }
 
@@ -315,7 +317,7 @@ void CommonInterface::DriverGateway::TakeOrder()
 {
     static const vector<string> consent = {"confirm", "cancel"};
     string input;
-    auto orders = interface->getActiveOrder(driver()->getCar().type);
+    auto orders = interface->getActiveOrder(driver()->getCar());
     if(orders.size() == 0){
         print("There is no orders for this car type");
         waitENTER();

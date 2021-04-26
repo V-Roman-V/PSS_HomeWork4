@@ -75,8 +75,8 @@ protected:
     int findDriver(const std::string& phone);
     Driver getDriver(int p);
 
-    std::vector<Order> getActiveOrder(CarType type);
-    std::pair<bool,Order> getActiveOrder(std::string phone);
+    std::vector<Order> getActiveOrder(const std::vector<Car>&type);
+    std::pair<bool,Order> getActiveOrder(const std::string& phone);
 };
 
 #endif // DATABASEINTERFACE_H

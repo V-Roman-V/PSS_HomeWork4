@@ -1,6 +1,6 @@
 #include "driver.h"
 
-Driver::Driver(const User& u, const Car& car)
+Driver::Driver(const User& u, const std::vector<Car>& car)
     :User(u), car(car)
 {}
 
@@ -22,7 +22,7 @@ void Driver::updateStatus(Status s)
     status = s;
 }
 
-Car Driver::getCar() const
+const std::vector<Car>& Driver::getCar() const
 {
     return car;
 }
