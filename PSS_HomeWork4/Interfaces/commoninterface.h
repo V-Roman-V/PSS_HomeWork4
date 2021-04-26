@@ -13,51 +13,65 @@
 
 class CommonInterface : public DataBaseInterface
 {
+private:
+    struct Gateway{
+        virtual ~Gateway(){if(person)delete person;};
+        virtual bool Menu()=0;
+        void SeeHistory();
+        User* person;
+        CommonInterface* interface;
+    protected:
+        Gateway(CommonInterface* i):person(nullptr),interface(i){}
+    };
 public:
     CommonInterface();
     ~CommonInterface();
     virtual bool start();
 
 protected:
+    PersonType type;
+    Gateway* gateway;
+
     bool Hello();
     bool Login();
-    bool Menu();
 
-    void SeeHistory();
+    class DriverGateway : public Gateway{
+    public:
+        bool Menu() override;
+        DriverGateway(CommonInterface* i):Gateway(i){};
+    protected:
+        void SeeCar();
+        void TakeOrder();
+        void SeeOrder();
+        void setStatus();
+    };
 
-    bool DrivMenu();
-    void D_SeeCar();
-    void D_TakeOrder();
-    void D_SeeOrder();
-    void D_setStatus();
+    class PassengerGateway : public Gateway{
+    public:
+        bool Menu() override;
+        PassengerGateway(CommonInterface* i):Gateway(i){};
+    protected:
+        void ChangePay();
+        void AddPinAddr();
+        void MakeOrder();
+        Address ChooseAddr(bool from);
+        CarType ChooseCar();
+        void CreateOrder(const Order& order);
+        void SeeOrder();
+    };
 
-    // todo(not neccesary) put together
-    bool PassMenu();
-    void P_ChangePay();
-    void P_AddPinAddr();
-    void P_MakeOrder();
-    Address P_ChooseAddr(bool from);
-    CarType P_ChooseCar();
-    void P_CreateOrder(const Order& order);
-    void P_SeeOrder();
-
-
+    // additional function
     static inline void print(const std::string& s){std::cout<<s<<std::endl;}
     static inline void getInput(std::string& input){std::cout<<'>';std::cin>>input;}
     static inline void waitENTER();
     static inline bool isNumber(const std::string& num){return num.size()>0 && (num.find_first_not_of( "0123456789" ) == std::string::npos);}
     static inline void clear(){system("cls");}
 
-    PersonType type;
-    User* person;
-
     template<class T>
     static std::string getListOptions(const std::vector<T>& list);
 
     template<class T>
     static int calculateInput(const std::string& input, const std::vector<T>& list);
-
-
 };
 
 #endif // COMMONINTERFACE_H
