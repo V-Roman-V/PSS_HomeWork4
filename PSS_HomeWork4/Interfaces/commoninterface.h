@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "People_classes/user.h"
+#include "People_classes/admin.h"
 #include "People_classes/driver.h"
 #include "People_classes/passenger.h"
 #include "Interfaces/databaseinterface.h"
@@ -37,9 +38,12 @@ protected:
     class AdminGateway : public Gateway{
     public:
         bool Menu() override;
+        Admin * admin(){return static_cast<Admin*>(person);}
         AdminGateway(CommonInterface* i):Gateway(i){};
-//    protected:
-//        void seeInfo
+    protected:
+        void seeInfo();
+        void blockUser();
+        void verifyCar();
     };
 
     class DriverGateway : public Gateway{

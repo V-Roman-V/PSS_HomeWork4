@@ -65,6 +65,46 @@ bool CommonInterface::Login()
         assert(!"Incorrect person type");
     }
 }
+// ----------------AdminGateway---------------------------
+
+bool CommonInterface::AdminGateway::Menu()
+{
+     static const vector<string> Actions = {"See_info","Block_user","Verify_car","exit"};
+     string input;
+     while(true){
+         clear();
+         print("You are successfully logged in as Admin:");
+         print(person->getFullInfo());
+         print("Select the option: "+getListOptions(Actions));
+         getInput(input);
+         int num = calculateInput(input,Actions);
+         if(num ==-1) continue; // try Again
+         if(num == (Actions.size()-1)) return false;
+         switch(num){
+             case 0: seeInfo();break;
+             case 1: blockUser();break;
+             case 2: verifyCar();break;
+         }
+     }
+}
+
+void CommonInterface::AdminGateway::seeInfo()
+{
+
+}
+
+void CommonInterface::AdminGateway::blockUser()
+{
+
+}
+
+void CommonInterface::AdminGateway::verifyCar()
+{
+
+}
+
+
+// ----------------PassengerGateway-----------------------
 
 bool CommonInterface::PassengerGateway::Menu()
 {
@@ -232,6 +272,7 @@ void CommonInterface::PassengerGateway::SeeHistory()
     waitENTER();
 }
 
+// ------------DriverGateway-------------
 
 bool CommonInterface::DriverGateway::Menu()
 {
