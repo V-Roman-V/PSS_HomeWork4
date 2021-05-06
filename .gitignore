@@ -1,0 +1,13 @@
+*.o
+Makefile*
+*.Debug
+*.Release
+/build-PSS*Debug
+/build-PSS*Release/debug
+.qmake*
+moc_*
+log_*
+log*.txt
+~*
+*.user
+*.pro.user
